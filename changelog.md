@@ -1,12 +1,12 @@
 # Changelog
 
-## Chat Patches `204.6.5` for Minecraft 1.20.2 on Fabric, Quilt
+## Chat Patches `204.6.5` for Minecraft 1.20.4 on Fabric, Quilt
 - Fixed certain messages from showing up blank and logging `ArrayIndexOutOfBoundsException`s ([#156](https://www.github.com/mrbuilder1961/ChatPatches/issues/146))
 - Fixed normal duplicate messages not having a counter (1.20.4 only, [#157](https://www.github.com/mrbuilder1961/ChatPatches/issues/157))
 - Fixed CompactChat duplicate messages not having a counter (1.20.2-4)
 - Added a help section to the README, which currently explains how to upload log files and access beta versions fresh from Actions
 
-## Chat Patches `204.6.4` for Minecraft 1.20.2 on Fabric, Quilt
+## Chat Patches `204.6.4` for Minecraft 1.20.4 on Fabric, Quilt
 - Fixed errors with regex input on the search screen not updating the text color
 - Made ChatSearchSettings save when the chat screen is closed then reopened; resets on game restart
 - Fixed team name colors, prefixes, and suffixes being ignored when `chatNameFormat` is customized ([#115](https://www.github.com/mrbuilder1961/ChatPatches/issues/115))
@@ -28,7 +28,7 @@
   - Tweaked the `MessageHandlerMixin#cacheGameData` method to use built-in methods instead of rewriting the same thing
   - Removed the `VANILLA_MESSAGE` matcher in `ChatUtils` because it was redundant
 
-## Chat Patches `204.6.3` for Minecraft 1.20.2 on Fabric, Quilt (not actually published, see above)
+## Chat Patches `204.6.3` for Minecraft 1.20.4 on Fabric, Quilt (not actually published, see above)
 - Should be compatible with Quilt again! (requires Loader 0.23.0+)
   - **Note that Chat Patches still isn't developed directly for Quilt, issues may still arise**
 - Added the `counterCheckStyle` option, which controls checking style data when condensing duplicate messages ([#144](https://www.github.com/mrbuilder1961/ChatPatches/issues/144))
