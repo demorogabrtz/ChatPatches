@@ -6,9 +6,9 @@ import java.util.function.Function
 import java.util.stream.Stream
 
 plugins {
-	id "fabric-loom" version "1.5-SNAPSHOT"
+	id "fabric-loom" version "1.6-SNAPSHOT"
 	id "maven-publish"
-	id "me.modmuss50.mod-publish-plugin" version "0.4.5"
+	id "me.modmuss50.mod-publish-plugin" version "0.5.1"
 }
 
 group = project.group
@@ -36,7 +36,7 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:$project.api"
 
 	modImplementation "com.terraformersmc:modmenu:$project.modmenu"
-	modImplementation "dev.isxander.yacl:yet-another-config-lib-fabric:$project.yacl"
+	modImplementation "dev.isxander:yet-another-config-lib:$project.yacl-fabric"
 }
 
 processResources {
