@@ -3,13 +3,11 @@ package obro1961.chatpatches.mixin.gui;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import com.llamalad7.mixinextras.sugar.Local;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
-import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.util.CommandHistoryManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -19,7 +17,6 @@ import obro1961.chatpatches.chatlog.ChatLog;
 import obro1961.chatpatches.config.Config;
 import obro1961.chatpatches.util.ChatUtils;
 import obro1961.chatpatches.util.Flags;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -87,7 +84,7 @@ public abstract class ChatHudMixin implements ChatHudAccessor {
     }
 
     @ModifyExpressionValue(
-        method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V",
+        method = {"addMessage(Lnet/minecraft/client/gui/hud/ChatHudLine;)V", "addVisibleMessage"},
         at = @At(value = "CONSTANT", args = "intValue=100")
     )
     private int moreMessages(int hundred) {
@@ -134,12 +131,12 @@ public abstract class ChatHudMixin implements ChatHudAccessor {
      * implementation specifications.
      */
     @ModifyVariable(
-        method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V",
+        method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;Lnet/minecraft/client/gui/hud/MessageIndicator;)V",
         at = @At("HEAD"),
         argsOnly = true
     )
-    private Text modifyMessage(Text m, @Local(argsOnly = true) boolean refreshing) {
-        return addCounter(ChatUtils.modifyMessage(m, refreshing), refreshing);
+    private Text modifyMessage(Text m) {
+        return addCounter(ChatUtils.modifyMessage(m, false), false);
     }
 
     @Inject(method = "addToMessageHistory", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/collection/ArrayListDeque;size()I"))
@@ -155,8 +152,8 @@ public abstract class ChatHudMixin implements ChatHudAccessor {
     }
 
     @Inject(method = "logChatMessage", at = @At("HEAD"), cancellable = true)
-    private void ignoreRestoredMessages(Text message, @Nullable MessageIndicator indicator, CallbackInfo ci) {
-        if( Flags.LOADING_CHATLOG.isRaised() && indicator != null )
+    private void ignoreRestoredMessages(ChatHudLine hudLine, CallbackInfo ci) {
+        if( Flags.LOADING_CHATLOG.isRaised() && hudLine.indicator() != null )
             ci.cancel();
     }
 
@@ -178,14 +175,14 @@ public abstract class ChatHudMixin implements ChatHudAccessor {
      *         <li>If a message was the same, call {@link ChatUtils#tryCondenseMessage(Text, int)},
      *         which ultimately removes that message and its visibles.</li>
      *     </ol>
-     *     <li>Return the (potentially) condensed message, to later be formatted further in {@link #modifyMessage(Text, boolean)}</li>
+     *     <li>Return the (potentially) condensed message, to later be formatted further in {@link #modifyMessage(Text)}</li>
      * </ol>
      * (Wraps the entire method in a try-catch to prevent any errors accidentally disabling the chat.)
      *
      * @apiNote This injector is pretty ugly and could definitely be cleaner and more concise, but I'm going to deal with it
      * in the future when I API-ify the rest of the mod. When that happens, this flag-add-flag-cancel method will be replaced
      * with a simple (enormous) method call alongside
-     * {@link #modifyMessage(Text, boolean)} in a @{@link ModifyVariable}
+     * {@link #modifyMessage(Text)} in a @{@link ModifyVariable}
      * handler. (NOTE: as of v202.6.0, this is partially done already thanks to #132)
      */
     @Unique

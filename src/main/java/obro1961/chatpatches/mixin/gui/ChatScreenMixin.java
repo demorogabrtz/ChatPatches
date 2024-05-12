@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -22,12 +23,11 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.network.message.MessageSignatureData;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
+import obro1961.chatpatches.ChatPatches;
 import obro1961.chatpatches.accessor.ChatHudAccessor;
 import obro1961.chatpatches.accessor.ChatScreenAccessor;
 import obro1961.chatpatches.config.ChatSearchSetting;
@@ -177,7 +177,8 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 			// hover menu buttons, column two
 			hoverButtons.put(COPY_RAW_STRING, of(1, COPY_RAW_STRING, () -> Formatting.strip( selectedLine.content().getString() )));
 			hoverButtons.put(COPY_FORMATTED_STRING, of(1, COPY_FORMATTED_STRING, () -> TextUtils.reorder( selectedLine.content().asOrderedText(), true )));
-			hoverButtons.put(COPY_JSON_STRING, of(1, COPY_JSON_STRING, () -> Text.Serialization.toJsonString(selectedLine.content())));
+			hoverButtons.put(COPY_JSON_STRING, of(1, COPY_JSON_STRING,
+				() -> TextCodecs.CODEC.encodeStart(JsonOps.INSTANCE, selectedLine.content()).map(JsonHelper::toSortedString).resultOrPartial(ChatPatches.LOGGER::error).get()));
 			hoverButtons.put(COPY_LINK_N.apply(0), of(1, COPY_LINK_N.apply(0), () -> ""));
 			hoverButtons.put(COPY_TIMESTAMP_TEXT, of(1, COPY_TIMESTAMP_TEXT, () -> getPart(selectedLine.content(), TIMESTAMP_INDEX).getString()));
 			hoverButtons.put(COPY_TIMESTAMP_HOVER_TEXT, of(1, COPY_TIMESTAMP_HOVER_TEXT, () -> {
@@ -242,7 +243,7 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 	 *     </ol>
 	 * </ol>
 	 */
-	@Inject(method = "render", at = @At("HEAD"))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V"))
 	public void renderSearchStuff(DrawContext drawContext, int mX, int mY, float delta, CallbackInfo ci) {
 		if(showSearch && !config.hideSearchButton) {
 			drawContext.fill(SEARCH_X - 2, height + SEARCH_Y_OFFSET - 2, (int) (width * (SEARCH_W_MULT + 0.06)), height + SEARCH_Y_OFFSET + SEARCH_H - 2, client.options.getTextBackgroundColor(Integer.MIN_VALUE));
@@ -753,7 +754,7 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 	/**
 	 * Creates a new list of to-be-rendered chat messages from the given list
 	 * of chat messages. The steps to achieving this are largely based on
-	 * the first half of the {@link ChatHud#addMessage(Text, MessageSignatureData, int, MessageIndicator, boolean)}
+	 * the first half of the {@link ChatHud#addMessage(Text, MessageSignatureData, MessageIndicator)}
 	 * method, specifically everything before the {@code while} loop.
 	 */
 	@Unique

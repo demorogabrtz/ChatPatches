@@ -5,11 +5,13 @@ import com.google.gson.Gson;
 import com.google.gson.InstanceCreator;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSerializer;
+import com.mojang.serialization.JsonOps;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import obro1961.chatpatches.ChatPatches;
 import obro1961.chatpatches.config.Config;
 import obro1961.chatpatches.util.Flags;
@@ -22,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
+import static obro1961.chatpatches.ChatPatches.LOGGER;
 import static obro1961.chatpatches.ChatPatches.config;
 
 /**
@@ -32,8 +35,8 @@ public class ChatLog {
     public static final MessageIndicator RESTORED_TEXT = new MessageIndicator(0x382fb5, null, null, I18n.translate("text.chatpatches.restored"));
 
     private static final Gson GSON = new com.google.gson.GsonBuilder()
-        .registerTypeAdapter(Text.class, (JsonSerializer<Text>) (src, type, context) -> Text.Serialization.toJsonTree(src))
-        .registerTypeAdapter(Text.class, (JsonDeserializer<Text>) (json, type, context) -> Text.Serialization.fromJsonTree(json))
+        .registerTypeAdapter(Text.class, (JsonSerializer<Text>) (src, type, context) -> TextCodecs.CODEC.encodeStart(JsonOps.INSTANCE, src).resultOrPartial(LOGGER::error).orElseThrow())
+        .registerTypeAdapter(Text.class, (JsonDeserializer<Text>) (json, type, context) -> TextCodecs.CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(LOGGER::error).orElseThrow())
         .registerTypeAdapter(Text.class, (InstanceCreator<Text>) type -> Text.empty())
     .create();
 

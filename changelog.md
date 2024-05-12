@@ -1,5 +1,13 @@
 # Changelog
 
+## Chat Patches `206.6.5` for Minecraft 1.20.5, 1.20.6 on Fabric, Quilt
+- Actually updated to Java 21 and Gradle 8.7
+- Fixed copy menu rendering behind other chat elements
+- Otherwise identical to `204.6.5`
+- **Dev notes:**
+  - Switched some references from `Text.Serialization` to `TextCodecs.CODEC` due to weird new registry stuff
+  - Minecraft made adding messages into the chat use a more modular system, however this makes future unified jar plans more difficult
+
 ## Chat Patches `204.6.5` for Minecraft 1.20.4 on Fabric, Quilt
 - Fixed certain messages from showing up blank and logging `ArrayIndexOutOfBoundsException`s ([#156](https://www.github.com/mrbuilder1961/ChatPatches/issues/146))
 - Fixed normal duplicate messages not having a counter (1.20.4 only, [#157](https://www.github.com/mrbuilder1961/ChatPatches/issues/157))
