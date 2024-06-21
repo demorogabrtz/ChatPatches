@@ -106,7 +106,7 @@ public class ChatPatches implements ClientModInitializer {
 	 * Creates a new Identifier using the ChatPatches mod ID.
 	 */
 	public static Identifier id(String path) {
-		return new Identifier(MOD_ID, path);
+		return Identifier.of(MOD_ID, path);
 	}
 
 	/**
