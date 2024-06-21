@@ -1,5 +1,14 @@
 # Changelog
 
+## Chat Patches `210.6.5` for Minecraft 1.20.5, 1.20.6, 1.21 on Fabric, Quilt
+- Ported to Minecraft 1.21!
+- **Dev notes:**
+  - Since this is the first release for 1.21, and because on the surface at least this appears to be compatible with 206.6.5,
+  the source branches will be split just in case any breaking issues arise later
+
+**? WARNING ?: THIS RELEASE *SHOULD* BE COMPATIBLE WITH MINECRAFT VERSIONS 1.20.5-1.21, BUT ERRORS MAY OCCUR**
+
+
 ## Chat Patches `206.6.5` for Minecraft 1.20.5, 1.20.6 on Fabric, Quilt
 - Actually updated to Java 21 and Gradle 8.7
 - Fixed copy menu rendering behind other chat elements
