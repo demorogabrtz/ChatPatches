@@ -1,5 +1,8 @@
 # Changelog
 
+## Chat Patches `210.6.5.1` for Minecraft 1.21 on Fabric, Quilt
+- Fix incompatibility with 1.20.5-6 (😭) ([#177](https://github.com/mrbuilder1961/ChatPatches/issues/177))
+
 ## Chat Patches `210.6.5` for Minecraft 1.20.5, 1.20.6, 1.21 on Fabric, Quilt
 - Ported to Minecraft 1.21!
 - **Dev notes:**
