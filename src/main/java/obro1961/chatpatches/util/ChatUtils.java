@@ -126,7 +126,8 @@ public class ChatUtils {
 	 * @implNote
 	 * <ol>
 	 *   <li>Don't modify when {@code refreshing} is true, as that signifies
-	 * 	 re-rendering chat messages, so simply return {@code m}.</li>
+	 * 	 re-rendering chat messages; nor when the chat log is restoring,
+	 * 	 so simply return {@code m}.</li>
 	 * 	 <li>Declare relevant variables, most notably the {@code timestamp}
 	 * 	 and {@code content} components.</li>
 	 * 	 <li>Reconstruct the player message if it should be reformatted
@@ -292,9 +293,14 @@ public class ChatUtils {
 		final List<ChatHudLine> messages = chat.chatpatches$getMessages();
 		final List<ChatHudLine.Visible> visibleMessages = chat.chatpatches$getVisibleMessages();
 
+		// just in case the incoming message is a literal string text w no sibs,
+		// we can reformat it as to not throw any annoying errors down the line
+		if(incoming.getContent() instanceof PlainTextContent && incoming.getSiblings().isEmpty())
+			incoming = buildMessage(null, null, incoming, null);
+
 		ChatHudLine comparingLine = messages.get(index); // message being compared
 		List<Text> comparingParts = comparingLine.content().getSiblings();
-		List<Text> incomingParts = new ArrayList<>( incoming.getSiblings() ); // prevents UOEs (1.20.3+ only)
+		List<Text> incomingParts = new ArrayList<>( incoming.getSiblings() ); // prevents UOEs for 1.20.3+
 
 
 		// IF the comparing and incoming message bodies are case-insensitively equal,
