@@ -4,18 +4,22 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.MessageIndicator;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.registry.BuiltinRegistries;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
-import net.minecraft.util.dynamic.Codecs;
 import obro1961.chatpatches.ChatPatches;
 import obro1961.chatpatches.config.Config;
 import obro1961.chatpatches.util.Flags;
@@ -145,7 +149,7 @@ public class ChatLog {
             // transformUUIDArrays: (temporary?) method to fix old chat logs
             JsonObject jsonData = JsonHelper.deserialize( transformUUIDArrays(rawData) );
 
-            data = Data.CODEC.parse(JsonOps.INSTANCE, jsonData).resultOrPartial(e -> {
+            data = Data.CODEC.parse(getRegistryOps(JsonOps.INSTANCE), jsonData).resultOrPartial(e -> {
                 throw new JsonSyntaxException(e);
             }).orElseThrow();
 
@@ -189,7 +193,7 @@ public class ChatLog {
 
         try {
             String str = JsonHelper.toSortedString(
-                Data.CODEC.encodeStart(JsonOps.INSTANCE, data).resultOrPartial(e -> {
+                Data.CODEC.encodeStart(getRegistryOps(JsonOps.INSTANCE), data).resultOrPartial(e -> {
                     throw new JsonSyntaxException(e);
                 }).orElseThrow()
             );
@@ -237,6 +241,26 @@ public class ChatLog {
         Flags.LOADING_CHATLOG.lower();
 
         LOGGER.info("[ChatLog.restore] Restored {} messages and {} history messages from '{}' into Minecraft!", messageCount(), historyCount(), PATH);
+    }
+
+    /**
+	 * Wraps the given {@link DynamicOps} object with
+	 * a registry lookup context, either from the
+	 * client's {@link ClientPlayNetworkHandler}
+	 * or a from newly created one if not in-game.
+	 *
+	 * <p>Fixes <a href="https://github.com/mrbuilder1961/ChatPatches/issues/180">#180</a>,
+     * where some classes aren't registered according to
+     * the plain {@code ops}  object. Or something like
+     * that, idfk.
+	 *
+	 * @since 1.21, but 1.20.5 introduces the necessity
+	 * of the {@link RegistryWrapper.WrapperLookup},
+	 * so this is included for compatibility anyway.
+	 */
+    public static <T> RegistryOps<T> getRegistryOps(DynamicOps<T> ops) {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        return mc.getNetworkHandler() != null ? mc.getNetworkHandler().getRegistryManager().getOps(ops) : BuiltinRegistries.createWrapperLookup().getOps(ops);
     }
 
     /**
