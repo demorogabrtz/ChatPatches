@@ -344,7 +344,7 @@ public class ChatUtils {
 				while( !visibleMessages.isEmpty() && !visibleMessages.get(0).endOfEntry() )
 					visibleMessages.remove(0);
 			}
-ChatPatches.LOGGER.warn("new counter: '{}' index: {}", incomingParts.get(DUPE_INDEX).getString(), index);
+
 			// according to some testing, modifying incomingParts DOES modify incoming.getSiblings(), so all changes are taken care of!
 			// ^ IGNORE ABOVE COMMENT ^ we have since wrapped incomingParts in a new ArrayList to prevent UOEs, so this is no longer true
 			return TextUtils.newText(incoming.getContent(), incomingParts, incoming.getStyle());
