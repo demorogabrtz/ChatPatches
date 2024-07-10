@@ -4,6 +4,7 @@
 - Fix odd enchantment registry crash (1.20.5-1.21, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180))
 - Removed stray debug logpoint in `ChatUtils#tryCondenseMessage`
 - Reintroduced the normal version scheme, not sure why I changed it in the first place...
+- Fixed the 'Copy JSON String' copy menu button sometimes causing the game to crash, should now instead log an error and copy a warning
 
 ## Chat Patches `210.6.5.1` for Minecraft 1.21 on Fabric, Quilt
 - Fix incompatibility with 1.20.5-6 (we were THIS close) ([#177](https://github.com/mrbuilder1961/ChatPatches/issues/177))
