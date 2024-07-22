@@ -520,7 +520,7 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 		final ChatHudAccessor chatHud = ChatHudAccessor.from(client);
 		final List<ChatHudLine.Visible> visibles = chatHud.chatpatches$getVisibleMessages();
 		// using LineIndex instead of Index bc during testing they both returned the same value; LineIndex has less code
-		final int hoveredIndex = chatHud.chatpatches$getMessageLineIndex(chatHud.chatpatches$toChatLineX(mX), chatHud.chatpatches$toChatLineY(mY + config.shiftChat));
+		final int hoveredIndex = chatHud.chatpatches$getMessageLineIndex(chatHud.chatpatches$toChatLineX(mX), chatHud.chatpatches$toChatLineY(mY));
 
 		if(hoveredIndex == -1)
 			return new ArrayList<>(0);

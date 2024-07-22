@@ -102,7 +102,7 @@ public abstract class ChatHudMixin implements ChatHudAccessor {
      * {@link Config#shiftChat}, including the text
      * and scroll bar, by shifting the y position of the chat.
      *
-     * @implNote Target: <br>{@code int m = MathHelper.floor((float)(l - 40) / f);}
+     * <p>Target: {@code int m = MathHelper.floor((float)(l - 40) / f);}
      */
     @ModifyVariable(method = "render", at = @At("STORE"), ordinal = 7)
     private int moveChat(int m) {
@@ -110,15 +110,17 @@ public abstract class ChatHudMixin implements ChatHudAccessor {
     }
 
     /**
-     * Moves the message indicator and hover tooltip
-     * by {@link Config#shiftChat} to correctly shift
-     * the chat with the other components.
-     * Targets two methods because the first part of both
-     * methods are identical.
+     * Moves the chat line by {@link Config#shiftChat} to
+     * correctly shift the chat with the other components.
+     * Used by the {@link ChatHud} to correctly render
+     * message indicators and chat hover tooltips when
+     * needed in the shifted position.
+     *
+     * <p>Target: {@code double d = this.client.getWindow().getScaledHeight() - y - 40.0;}
      */
-    @ModifyVariable(method = {"getIndicatorAt", "getTextStyleAt"}, argsOnly = true, at = @At("HEAD"), ordinal = 1)
-    private double moveINDHoverText(double e) {
-        return e + ( config.shiftChat * this.getChatScale() );
+    @ModifyVariable(method = "toChatLineY", at = @At("HEAD"), argsOnly = true)
+    private double moveChatLineY(double y) {
+        return y + config.shiftChat;
     }
 
 
