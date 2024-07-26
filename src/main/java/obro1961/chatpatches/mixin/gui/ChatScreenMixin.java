@@ -114,6 +114,8 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 	@Unique private SearchButtonWidget searchButton;
 	@Unique private PatternSyntaxException searchError;
 
+	@SuppressWarnings("MissingUnique") //@Shadow
+	@NotNull protected MinecraftClient client = MinecraftClient.getInstance(); // removes false NPE warnings
 	@Shadow	protected TextFieldWidget chatField;
 	@Shadow private String originalChatText;
 
@@ -236,6 +238,25 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 	 *     		<li>The {@link #searchField} itself</li>
 	 *     		<li>If it isn't null, the {@link #searchError}</li>
 	 *     </ol>
+	 * </ol>
+	 */
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V"))
+	private void renderSearchButtonAndBar(DrawContext context, int mX, int mY, float delta, CallbackInfo ci) {
+		if(showSearch && !config.hideSearchButton) {
+			context.fill(SEARCH_X - 2, height + SEARCH_Y_OFFSET - 2, (int) (width * (SEARCH_W_MULT + 0.06)), height + SEARCH_Y_OFFSET + SEARCH_H - 2, client.options.getTextBackgroundColor(Integer.MIN_VALUE));
+			searchField.render(context, mX, mY, delta);
+
+			// renders a suggestion-esq error message if the regex search is invalid
+			if(searchError != null) {
+				int x = searchField.getX() + 8 + (int) (width * SEARCH_W_MULT);
+				context.drawTextWithShadow(textRenderer, searchError.getMessage().split( System.lineSeparator() )[0], x, searchField.getY(), 0xD00000);
+			}
+		}
+	}
+
+	/**
+	 * @implNote Rendering order:
+	 * <ol>
 	 *     <li>If the settings menu should show:</li>
 	 *     <ol>
 	 *     		<li>The settings menu background</li>
@@ -249,28 +270,17 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 	 * </ol>
 	 */
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V"))
-	public void renderSearchStuff(DrawContext drawContext, int mX, int mY, float delta, CallbackInfo ci) {
-		if(showSearch && !config.hideSearchButton) {
-			drawContext.fill(SEARCH_X - 2, height + SEARCH_Y_OFFSET - 2, (int) (width * (SEARCH_W_MULT + 0.06)), height + SEARCH_Y_OFFSET + SEARCH_H - 2, client.options.getTextBackgroundColor(Integer.MIN_VALUE));
-			searchField.render(drawContext, mX, mY, delta);
-
-			// renders a suggestion-esq error message if the regex search is invalid
-			if(searchError != null) {
-				int x = searchField.getX() + 8 + (int) (width * SEARCH_W_MULT);
-				drawContext.drawTextWithShadow(textRenderer, searchError.getMessage().split( System.lineSeparator() )[0], x, searchField.getY(), 0xD00000);
-			}
-		}
-
+	public void renderSearchSettingsAndCopyMenu(DrawContext context, int mX, int mY, float delta, CallbackInfo ci) {
 		// renders the bg and the buttons for the settings menu
 		if(showSettingsMenu && !config.hideSearchButton) {
-			drawContext.drawTexture(
+			context.drawTexture(
 				id("textures/gui/search_settings_panel.png"),
 				MENU_X,  height + MENU_Y_OFFSET, 0, 0, MENU_WIDTH, MENU_HEIGHT, MENU_WIDTH, MENU_HEIGHT
 			);
 
-			caseSensitive.button.render(drawContext, mX, mY, delta);
-			modifiers.button.render(drawContext, mX, mY, delta);
-			regex.button.render(drawContext, mX, mY, delta);
+			caseSensitive.button.render(context, mX, mY, delta);
+			modifiers.button.render(context, mX, mY, delta);
+			regex.button.render(context, mX, mY, delta);
 		}
 
 		// renders the copy menu's selection box and menu buttons
@@ -290,8 +300,8 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 			int i = visibles.indexOf( hoveredVisibles.get(hoveredParts - 1) ) - chat.chatpatches$getScrolledLines();
 			int hoveredY = sH - (i * lH) - shift;
 
-			drawContext.getMatrices().push();
-			drawContext.getMatrices().scale((float) s, (float) s, 1.0f);
+			context.getMatrices().push();
+			context.getMatrices().scale((float) s, (float) s, 1.0f);
 
 			int borderW = sW + 8;
 			int scissorY1 = MathHelper.floor((sH - (chatHud.getVisibleLineCount() * lH) - shift - 1) * s);
@@ -300,19 +310,19 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 			int selectionH = (lH * hoveredParts) + 1;
 
 			// cuts off any of the selection rect that goes past the chat hud
-			drawContext.enableScissor(0, scissorY1, borderW, scissorY2);
-			drawContext.drawBorder(0, selectionY1, borderW, selectionH, config.copyColor + 0xff000000);
-			drawContext.disableScissor();
+			context.enableScissor(0, scissorY1, borderW, scissorY2);
+			context.drawBorder(0, selectionY1, borderW, selectionH, config.copyColor + 0xff000000);
+			context.disableScissor();
 
-			drawContext.getMatrices().pop();
+			context.getMatrices().pop();
 
 
-			mainButtons.values().forEach(menuButton -> menuButton.render(drawContext, mX, mY, delta));
+			mainButtons.values().forEach(menuButton -> menuButton.render(context, mX, mY, delta));
 			hoverButtons.values().forEach(menuButton -> {
 				if(menuButton.is( COPY_LINK_N.apply(0) ))
-					mainButtons.get(COPY_MENU_LINKS).children.forEach(linkButton -> linkButton.render(drawContext, mX, mY, delta));
+					mainButtons.get(COPY_MENU_LINKS).children.forEach(linkButton -> linkButton.render(context, mX, mY, delta));
 				else
-					menuButton.render(drawContext, mX, mY, delta);
+					menuButton.render(context, mX, mY, delta);
 			});
 		}
 	}

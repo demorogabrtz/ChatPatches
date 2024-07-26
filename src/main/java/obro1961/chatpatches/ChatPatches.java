@@ -91,10 +91,10 @@ public class ChatPatches implements ClientModInitializer {
 			}
 
 			// sets all messages (restored and boundary line) to a addedTime of 0 to prevent instant rendering (#42)
-			if(ChatLog.loaded && Flags.INIT.isRaised()) {
-				chatHud.chatpatches$getVisibleMessages().replaceAll(ln -> new ChatHudLine.Visible(0, ln.content(), ln.indicator(), ln.endOfEntry()));
-				Flags.INIT.lower();
-			}
+			// only replaces messages that would render instantly to save performance on large chat logs
+			// no longer ran once per game, but once per join (#151) (note: if you open the chat and then close it, the messages will reappear)
+			int t = client.inGameHud.getTicks();
+			chatHud.chatpatches$getVisibleMessages().replaceAll(ln -> (t - ln.addedTime() < 200) ? new ChatHudLine.Visible(0, ln.content(), ln.indicator(), ln.endOfEntry()) : ln);
 		});
 
 		LOGGER.info("[ChatPatches()] Finished setting up!");
