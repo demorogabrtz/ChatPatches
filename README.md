@@ -192,3 +192,7 @@ https://github.com/mrbuilder1961/ChatPatches/actions/runs/8310511511/artifacts/1
 - Ko-Fi: https://ko-fi.com/obro1961
 
 [![15% off your first month with code OBRO15!](https://i.imgur.com/9mjs77B.png)](https://billing.kinetichosting.net/aff.php?aff=234)
+
+### (not sponsored; highly encouraged)
+[![Use your voice, help the families of Gaza](https://github.com/user-attachments/assets/111407d3-0018-4ac9-b9db-2e515e2e54a0)
+](https://linktr.ee/opolivebranch)
