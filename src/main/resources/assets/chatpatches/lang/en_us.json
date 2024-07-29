@@ -86,6 +86,7 @@
 
     "text.chatpatches.chatHidePacket": "Ignore hide message packet",
     "text.chatpatches.chatWidth": "Override chat width",
+    "text.chatpatches.chatHeight": "Override chat height",
     "text.chatpatches.chatMaxMessages": "Maximum chat messages",
     "text.chatpatches.chatNameFormat": "Playername text",
     "text.chatpatches.chatNameColor": "Playername color",
@@ -97,6 +98,7 @@
     "text.chatpatches.vanillaClearing": "Vanilla chat clearing",
     "text.chatpatches.desc.chatHidePacket": "Should hide message packets that delete chat messages be ignored?",
     "text.chatpatches.desc.chatWidth": "The width of the chat box. This overrides vanilla's default and allows for a much larger width. Set to 0 to use the vanilla setting and not override it.",
+    "text.chatpatches.desc.chatHeight": "The height of the chat box. This overrides vanilla's default and allows for a much larger height. Set to 0 to use the vanilla setting and not override it.",
     "text.chatpatches.desc.chatMaxMessages": "The max amount of chat messages allowed to save. Vanilla caps it at 100, this mod can increase it up to 32,767. Keep in mind a higher max equals higher memory usage.",
     "text.chatpatches.desc.chatNameFormat": "The text that replaces the playername in chat messages. Vanilla is '<$>', name only is '$'; where '$' is a placeholder for the playername. Only applies to player-sent messages.",
     "text.chatpatches.desc.chatNameColor": "The color that's filled in where it would otherwise be blank white in the resulting formatted playername. To use this with other formatting modifiers, use '&r' in the decoration text option.",

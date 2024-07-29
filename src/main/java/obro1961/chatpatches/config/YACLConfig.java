@@ -260,6 +260,7 @@ public class YACLConfig extends Config {
                 case "counterCompactDistance" -> 1024;
                 case "chatlogSaveInterval" -> 180;
                 case "chatWidth" -> MinecraftClient.getInstance().getWindow().getScaledWidth() - 12; // offset length calc'd from ChatHud#render aka magic #
+                case "chatHeight" -> MinecraftClient.getInstance().getWindow().getScaledHeight() - 12;
                 // only issue w ^^^ is if the window is resized while the config screen is open the max value will be incorrect
                 // other issue could be with the future config redo, as annotation constraints must be *constant*
                 case "chatMaxMessages" -> Short.MAX_VALUE;
