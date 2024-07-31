@@ -1,5 +1,8 @@
 # Changelog
 
+## Chat Patches `210.7.0` for Minecraft 1.21 on Fabric, Quilt
+- Added an option to modify the height of the chat box for larger screens ([#190](https://github.com/mrbuilder1961/ChatPatches/pull/190))
+
 ## Chat Patches `210.6.6` for Minecraft 1.21 on Fabric, Quilt
 - Fix odd enchantment registry crash (1.20.5-1.21, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180)) // still not fixed whoops..
 - Removed stray debug logpoint in `ChatUtils#tryCondenseMessage`
