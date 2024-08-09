@@ -1,7 +1,7 @@
 package obro1961.chatpatches;
 
 import com.google.gson.JsonElement;
-import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -11,8 +11,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.screen.GameMenuScreen;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.registry.BuiltinRegistries;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
@@ -22,6 +21,8 @@ import obro1961.chatpatches.config.Config;
 import obro1961.chatpatches.util.ChatUtils;
 import obro1961.chatpatches.util.Flags;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,15 +31,29 @@ import java.util.function.Supplier;
 
 public class ChatPatches implements ClientModInitializer {
 	public static final String MOD_ID = "chatpatches";
-	public static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("Chat Patches");
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static final Supplier<String> TIME_FORMATTER = () -> new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-	public static final RegistryWrapper.WrapperLookup LOOKUP = BuiltinRegistries.createWrapperLookup();
 
 	public static Config config = Config.create();
 	/** Contains the sender and timestamp data of the last received chat message. */
 	public static ChatUtils.MessageData msgData = ChatUtils.NIL_MSG_DATA;
 
 	private static String lastWorld = "";
+	/**
+	 * A {@link JsonOps#INSTANCE} wrapped by a {@link DynamicRegistryManager.Immutable}
+	 * to not throw crashes when using {@link Codec}s. Initialized on every new
+	 * world/server load to sync properly.
+	 *
+	 * <p>Accessible publicly via {@link #jsonOps()}.
+	 * Fixes <a href="https://github.com/mrbuilder1961/ChatPatches/issues/180">#180</a>.
+	 * Thanks to
+	 * <a href="https://discord.com/channels/507304429255393322/721100785936760876/1256468334967525497">Kevinthegreat</a>
+	 * for some help on the Fabric Discord!
+	 *
+	 * @since 1.21, but 1.20.5 introduces the necessity
+	 * of wrapping with the {@link RegistryWrapper.WrapperLookup}
+	 */
+	private static RegistryOps<JsonElement> REGISTRY_JSON_OPS = null;
 
 	/**
 	 * Creates a new Identifier using the ChatPatches mod ID.
@@ -46,7 +61,7 @@ public class ChatPatches implements ClientModInitializer {
 	public static Identifier id(String path) {
 		// unfortunately this method in 1.20.6 is method_43902
 		// but in 1.21 it's method_60655, making it incompatible
-		// this is grinding my gears bc the code is identical 😭
+		// this is grinding my gears bc the code is identicalS
 		return Identifier.of(MOD_ID, path);
 	}
 
@@ -69,6 +84,9 @@ public class ChatPatches implements ClientModInitializer {
 
 		// registers the cached message file importer and boundary sender
 		ClientPlayConnectionEvents.JOIN.register((network, packetSender, client) -> {
+			if(REGISTRY_JSON_OPS == null)
+				REGISTRY_JSON_OPS = network.getRegistryManager().getOps(JsonOps.INSTANCE);
+
 			if(config.chatlog && !ChatLog.loaded) {
 				ChatLog.deserialize();
 				ChatLog.restore(client);
@@ -141,33 +159,8 @@ public class ChatPatches implements ClientModInitializer {
 		LOGGER.error("[%s.%s] /!\\ Please report this error on GitHub or Discord with the full log file attached! /!\\".formatted(clazz, method), error);
 	}
 
-	/**
-	 * Wraps the given {@link DynamicOps} object with
-	 * a registry lookup context, either from the
-	 * client's {@link ClientPlayNetworkHandler}
-	 * or a from newly created one if not in-game.
-	 *
-	 * <p>Fixes <a href="https://github.com/mrbuilder1961/ChatPatches/issues/180">#180</a>,
-	 * where some classes aren't registered according to
-	 * the plain {@code ops}  object. Or something like
-	 * that, idfk.
-	 *
-	 * @since 1.21, but 1.20.5 introduces the necessity
-	 * of the {@link RegistryWrapper.WrapperLookup},
-	 * so this is included for compatibility anyway.
-	 * @author
-	 * <a href="https://discord.com/channels/507304429255393322/721100785936760876/1256468334967525497">
-	 * <b>Kevinthegreat</b> from the Fabric Discord!</a>
-	 */
-	public static <T> RegistryOps<T> getRegOps(DynamicOps<T> ops) {
-		MinecraftClient mc = MinecraftClient.getInstance();
-		return
-			mc.getNetworkHandler() != null && mc.getNetworkHandler().getRegistryManager() != null
-				? mc.getNetworkHandler().getRegistryManager().getOps(ops)
-				: LOOKUP.getOps(ops)
-			;
-	}
+	/** See {@link #REGISTRY_JSON_OPS} for details */
 	public static RegistryOps<JsonElement> jsonOps() {
-		return getRegOps(JsonOps.INSTANCE);
+		return REGISTRY_JSON_OPS;
 	}
 }
