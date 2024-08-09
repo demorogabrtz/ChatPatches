@@ -117,7 +117,10 @@ public class YACLConfig extends Config {
                 .category( category("boundary", boundaryOpts) )
                 .category( category("chatlog", chatlogOpts, group("chatlog.actions", chatlogActions, null)) )
                 .category( category("chat", List.of(),
-                    group("chat.name", chatNameOpts, null), group("chat.hud", chatHudOpts, null), group("chat.screen", chatScreenOpts, null)) )
+                    group("chat.name", chatNameOpts, null),
+                    group("chat.hud", chatHudOpts, null),
+                    group("chat.screen", chatScreenOpts, null)
+                ))
                 .category( category("copy", copyMenuOpts) )
 
                 .category(
