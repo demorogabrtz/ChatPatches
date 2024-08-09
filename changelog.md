@@ -9,6 +9,7 @@
 - Fixed boundary lines instantly-rendering when the chat is opened ([#151](https://www.github.com/mrbuilder1961/ChatPatches/issues/151))
 - Fixed the search bar rendering over the input suggestor instead of under it ([#186](https://www.github.com/mrbuilder1961/ChatPatches/issues/186))
 - Added an option to modify the height of the chat box for larger screens ([#190](https://github.com/mrbuilder1961/ChatPatches/pull/190))
+- Removed literal newline in `fabric.mod.json` ([#159](https://www.github.com/mrbuilder1961/ChatPatches/issues/159))
 
 ## Chat Patches `210.6.5.1` for Minecraft 1.21 on Fabric, Quilt
 - Fix incompatibility with 1.20.5-6 (we were THIS close) ([#177](https://github.com/mrbuilder1961/ChatPatches/issues/177))
