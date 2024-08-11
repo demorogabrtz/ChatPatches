@@ -189,6 +189,17 @@ https://github.com/mrbuilder1961/ChatPatches/actions/runs/8310511511/artifacts/1
 7. Now you should be good to go! Launching the game should now load the beta version. If you experience any issues, make sure to report them as soon as
    possible wherever you were given the link (here on GitHub or [the Discord](https://discord.gg/3MqBvNEyMz)).
 
+### How to find mod(s) causing compatibility issues (binary search)
+*(taken from the Fabric Discord bot, not claiming ownership, just sharing knowledge!)*
+
+> A binary search can be used to quickly find a specific mod causing trouble, which can be especially useful when logs don't give a conclusive answer to your issue.
+
+> Start by removing or disabling half of your mods, then test if the problem still occurs. If it does, remove half of the remaining mods and test again. If it doesn't, add back half of the mods you just removed.
+
+> Keep in mind you don't have to stick strictly to halves each time, and may have to enable some library mods like Fabric API out of order.
+
+> By repeating this on an increasingly smaller set of mods, you'll find the problematic mod within a few iterations.
+
 ## Sponsor me!
 - Ko-Fi: https://ko-fi.com/obro1961
 
