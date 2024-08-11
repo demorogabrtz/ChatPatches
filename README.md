@@ -200,6 +200,8 @@ https://github.com/mrbuilder1961/ChatPatches/actions/runs/8310511511/artifacts/1
 
 > By repeating this on an increasingly smaller set of mods, you'll find the problematic mod within a few iterations.
 
+Make sure you leave Chat Patches and it's dependencies installed when you're looking for the problematic mod, otherwise it won't do anything to help diagnose the issue.
+
 ## Sponsor me!
 - Ko-Fi: https://ko-fi.com/obro1961
 
