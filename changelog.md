@@ -11,6 +11,7 @@
 - Added an option to modify the height of the chat box for larger screens ([#190](https://github.com/mrbuilder1961/ChatPatches/pull/190))
 - Removed literal newline in `fabric.mod.json` ([#159](https://www.github.com/mrbuilder1961/ChatPatches/issues/159))
 - Added Korean translation thanks to [Nooiee](https://github.com/Nooiee)! ([#193](https://github.com/mrbuilder1961/ChatPatches/issues/193))
+- Added a very basic crash prevention mechanism for `ConcurrentModificationException`s while saving the chat log (if it works, [#181](https://www.github.com/mrbuilder1961/ChatPatches/issues/181))
 
 ## Chat Patches `210.6.5.1` for Minecraft 1.21 on Fabric, Quilt
 - Fix incompatibility with 1.20.5-6 (we were THIS close) ([#177](https://github.com/mrbuilder1961/ChatPatches/issues/177))

@@ -143,7 +143,8 @@ public class ChatPatches implements ClientModInitializer {
 	/**
 	 * Logs an error-level message telling the user to report
 	 * the given error. The class and method of the caller is
-	 * provided from a {@link StackWalker}.
+	 * provided from a {@link StackWalker}. Returns the passed
+	 * error for throwing if needed.
 	 * <br><br>
 	 * Outputs the following message:
 	 * <pre>
@@ -151,12 +152,13 @@ public class ChatPatches implements ClientModInitializer {
 	 * (error)
 	 * </pre>
 	 */
-	public static void logInfoReportMessage(Throwable error) {
+	public static Throwable logInfoReportMessage(@NotNull Throwable error) {
 		StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 		String clazz = walker.getCallerClass().getSimpleName();
 		String method = walker.walk(frames -> frames.skip(1).findFirst().orElseThrow().getMethodName());
 		method = method.isBlank() ? error.getStackTrace()[0].getMethodName() : method;
 		LOGGER.error("[%s.%s] /!\\ Please report this error on GitHub or Discord with the full log file attached! /!\\".formatted(clazz, method), error);
+		return error;
 	}
 
 	/** See {@link #REGISTRY_JSON_OPS} for details */

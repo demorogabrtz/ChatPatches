@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.function.Function;
 
 import static obro1961.chatpatches.ChatPatches.LOGGER;
@@ -188,9 +189,7 @@ public class ChatLog {
 
         try {
             String str = JsonHelper.toSortedString(
-                Data.CODEC.encodeStart(ChatPatches.jsonOps(), data).resultOrPartial(e -> {
-                    ChatPatches.logInfoReportMessage(new JsonParseException(e));
-                }).orElseThrow()
+                Data.CODEC.encodeStart(ChatPatches.jsonOps(), data).resultOrPartial(e -> ChatPatches.logInfoReportMessage(new JsonParseException(e))).orElseThrow()
             );
 
             Files.writeString(PATH, str, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -198,8 +197,17 @@ public class ChatLog {
             lastHistoryCount = historyCount();
             lastMessageCount = messageCount();
             LOGGER.info("[ChatLog.serialize] Saved the chat log containing {} messages and {} sent messages to '{}'", messageCount(), historyCount(), PATH);
-        } catch(IOException e) {
-            LOGGER.error("[ChatLog.serialize] An I/O error occurred while trying to save the chat log:", e);
+        } catch(ConcurrentModificationException cme) {
+            if(!Flags.ALLOW_CME.isRaised()) {
+                LOGGER.warn("[ChatLog.serialize] A ConcurrentModificationException was unexpectedly thrown, trying to serialize one more time:", cme);
+                Flags.ALLOW_CME.raise();
+                serialize(false);
+                Flags.ALLOW_CME.lower();
+            } else {
+                LOGGER.error("[ChatLog.serialize] A ConcurrentModificationException was thrown again, chat log saving FAILED:", cme);
+            }
+        } catch(IOException | RuntimeException e) {
+            LOGGER.error("[ChatLog.serialize] An I/O or unexpected runtime error occurred while trying to save the chat log:", e);
             LOGGER.debug("[ChatLog.serialize] Dumped data:\n{\"history\":{},\"messages\":{}}", data.history, data.messages);
         } finally {
             if(crashing)
