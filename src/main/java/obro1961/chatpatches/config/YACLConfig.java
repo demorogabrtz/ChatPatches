@@ -335,6 +335,7 @@ public class YACLConfig extends Config {
             .name(Text.translatable( "text.chatpatches." + key, (args[0].equals(-1) ? new Object[0] : args) )) // args or nothing
             .description(desc( new ConfigOption<>(o, o, key) ))
             .action(getAction(key))
+            .available( !key.matches("chatlog(Load|Save)") || MinecraftClient.getInstance().world != null ) // must be in-game to load/save
             .build();
     }
 }

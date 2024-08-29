@@ -55,17 +55,18 @@ public class ChatPatches implements ClientModInitializer {
 		/*
 		* ChatLog saving events, run if config.chatlog is true:
 		* 	CLIENT_STOPPING - Always saves
-		* 	SCREEN_AFTER_INIT - Saves if there is no save interval AND if the screen is the OptionsScreen (paused)
-		* 	START_CLIENT_TICK - Ticks the save counter, saves if the counter is 0, resets if <0
+		* 	SCREEN_AFTER_INIT - Saves if there is no save interval AND if the screen is the GameMenuScreen (paused)
+		* 	END_WORLD_TICK - Ticks the save counter, saves if the counter is 0, resets if <0
 		* 	MinecraftClientMixin#saveChatlogOnCrash - Always saves
 		*/
-		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> ChatLog.serialize(false));
+
+		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> ChatLog.serialize(false)); //fixme: check if world exists; else use diff event
 		ScreenEvents.AFTER_INIT.register((client, screen, sW, sH) -> {
-			// saves the chat log if [the save interval is 0] AND [the pause menu is showing OR the game isn't focused]
+			// saves the chat log if [the save interval is disabled] AND [the pause menu is showing OR the game isn't focused]
 			if( config.chatlogSaveInterval == 0 && (screen instanceof GameMenuScreen || !client.isWindowFocused()) )
 				ChatLog.serialize(false);
 		});
-		ClientTickEvents.START_CLIENT_TICK.register(client -> ChatLog.tickSaveCounter());
+		ClientTickEvents.END_WORLD_TICK.register(world -> ChatLog.tickSaveCounter());
 
 		// registers the cached message file importer and boundary sender
 		ClientPlayConnectionEvents.JOIN.register((network, packetSender, client) -> {

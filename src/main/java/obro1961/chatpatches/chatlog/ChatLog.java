@@ -175,7 +175,8 @@ public class ChatLog {
 
     /**
      * Saves the chat log to {@link #PATH}. Only saves if {@link Config#chatlog} is true,
-     * it isn't crashing again, and if there is *new* data to save.
+     * it isn't crashing again, and if there is *new* data to save. <i>As of 1.20.5,
+     * also requires the player to be in-game during the saving process (#180).</i>
      *
      * @param crashing If the game is crashing. If true, it will only save if {@link #savedAfterCrash}
      * is false AND if {@link Config#chatlogSaveInterval} is 0.
@@ -187,6 +188,13 @@ public class ChatLog {
             return; // don't overwrite the file with an empty one if there's nothing to save
         if(messageCount() == lastMessageCount && historyCount() == lastHistoryCount)
             return; // don't save if there's no new data AND if the path is the default one (not a backup)
+        if(MinecraftClient.getInstance().world == null) {
+            LOGGER.error("[ChatLog.serialize] PLZ REPORT THIS: Tried to save the chat log while not in-game!");
+            return;
+            //todo: all callers of this method must have the ClientWorld exist,
+            // notably the crashing mixin (repl MC mixin w ClientWorld mixin or sm?)
+            // and the on-stop event (check if world exists, else use some other event. unless it's already saved by ClientWorld mixin)
+        }
 
         try {
             JsonElement json = Data.CODEC.encodeStart(ChatPatches.jsonOps(), data)

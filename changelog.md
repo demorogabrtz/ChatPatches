@@ -2,6 +2,8 @@
 
 ## Chat Patches `210.6.6` for Minecraft 1.21 on Fabric, Quilt
 - Fix odd enchantment registry crash (1.20.5-1.21, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180)) // WHY WONT THIS BUG DIEEEEEEEE
+  - Now requires the user to be in-game to save or load the chat log
+  - Clarified this new requirement in the action description
 - Removed stray debug logpoint in `ChatUtils#tryCondenseMessage`
 - Reintroduced the normal version scheme (not sure why I changed it in the first place...)
 - Fixed the 'Copy JSON String' copy menu button sometimes causing the game to crash, should now instead log an error and copy a warning
