@@ -39,21 +39,6 @@ public class ChatPatches implements ClientModInitializer {
 	public static ChatUtils.MessageData msgData = ChatUtils.NIL_MSG_DATA;
 
 	private static String lastWorld = "";
-	/**
-	 * A {@link JsonOps#INSTANCE} wrapped by a {@link DynamicRegistryManager.Immutable}
-	 * to not throw crashes when using {@link Codec}s. Initialized on every new
-	 * world/server load to sync properly.
-	 *
-	 * <p>Accessible publicly via {@link #jsonOps()}.
-	 * Fixes <a href="https://github.com/mrbuilder1961/ChatPatches/issues/180">#180</a>.
-	 * Thanks to
-	 * <a href="https://discord.com/channels/507304429255393322/721100785936760876/1256468334967525497">Kevinthegreat</a>
-	 * for some help on the Fabric Discord!
-	 *
-	 * @since 1.21, but 1.20.5 introduces the necessity
-	 * of wrapping with the {@link RegistryWrapper.WrapperLookup}
-	 */
-	private static RegistryOps<JsonElement> REGISTRY_JSON_OPS = null;
 
 	/**
 	 * Creates a new Identifier using the ChatPatches mod ID.
@@ -84,9 +69,6 @@ public class ChatPatches implements ClientModInitializer {
 
 		// registers the cached message file importer and boundary sender
 		ClientPlayConnectionEvents.JOIN.register((network, packetSender, client) -> {
-			if(REGISTRY_JSON_OPS == null)
-				REGISTRY_JSON_OPS = network.getRegistryManager().getOps(JsonOps.INSTANCE);
-
 			if(config.chatlog && !ChatLog.loaded) {
 				ChatLog.deserialize();
 				ChatLog.restore(client);
@@ -161,8 +143,20 @@ public class ChatPatches implements ClientModInitializer {
 		return error;
 	}
 
-	/** See {@link #REGISTRY_JSON_OPS} for details */
+	/**
+	 * Returns a {@link JsonOps#INSTANCE} wrapped by a {@link DynamicRegistryManager.Immutable}
+	 * (provided by the ClientWorld) to not throw crashes when using {@link Codec}s.
+	 *
+	 * <p>Fixes <a href="https://github.com/mrbuilder1961/ChatPatches/issues/180">#180</a>.
+	 * Thanks to
+	 * <a href="https://discord.com/channels/507304429255393322/721100785936760876/1278519812628156528">arkosammy12</a>
+	 * for some help on the Fabric Discord!
+	 *
+	 * @since 1.21, but 1.20.5 introduces the necessity
+	 * of wrapping with the {@link RegistryWrapper.WrapperLookup}
+	 */
 	public static RegistryOps<JsonElement> jsonOps() {
-		return REGISTRY_JSON_OPS;
+		return Objects.requireNonNull(MinecraftClient.getInstance().world, "[ChatPatches#jsonOps] Expected existing world")
+			.getRegistryManager().getOps(JsonOps.INSTANCE);
 	}
 }

@@ -1,6 +1,7 @@
 package obro1961.chatpatches.chatlog;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
@@ -188,11 +189,11 @@ public class ChatLog {
             return; // don't save if there's no new data AND if the path is the default one (not a backup)
 
         try {
-            String str = JsonHelper.toSortedString(
-                Data.CODEC.encodeStart(ChatPatches.jsonOps(), data).resultOrPartial(e -> ChatPatches.logInfoReportMessage(new JsonParseException(e))).orElseThrow()
-            );
+            JsonElement json = Data.CODEC.encodeStart(ChatPatches.jsonOps(), data)
+                .resultOrPartial(e -> ChatPatches.logInfoReportMessage(new JsonParseException(e)))
+                .orElseThrow();
 
-            Files.writeString(PATH, str, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.writeString(PATH, JsonHelper.toSortedString(json), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
             lastHistoryCount = historyCount();
             lastMessageCount = messageCount();
