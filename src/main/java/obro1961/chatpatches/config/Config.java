@@ -36,6 +36,7 @@ public class Config {
     public static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("chatpatches.json");
     public static final Config DEFAULTS = new Config();
 
+    private static final FabricLoader FABRIC = FabricLoader.getInstance();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	// categories: time, hover, counter, counter.compact, boundary, chatlog, chat.hud, chat.screen, copy
@@ -54,8 +55,7 @@ public class Config {
      * on installed mods. Should only be called once.
      */
     public static Config create() {
-        FabricLoader fbr = FabricLoader.getInstance();
-		boolean accessibleInGame = fbr.isModLoaded("modmenu") || (fbr.isModLoaded("catalogue") && fbr.isModLoaded("menulogue"));
+		boolean accessibleInGame = FABRIC.isModLoaded("modmenu") || (FABRIC.isModLoaded("catalogue") && FABRIC.isModLoaded("menulogue"));
         config = accessibleInGame ? new YACLConfig() : DEFAULTS;
 
         read();
@@ -145,12 +145,13 @@ public class Config {
                     .append(team.getSuffix())
                     .append(configSuffix);
             }
-        } catch(Exception e) {
+        } catch(RuntimeException e) {
             LOGGER.error("[Config.formatPlayername] /!\\ An error occurred while trying to format '{}'s playername /!\\", profile.getName());
-            ChatPatches.logInfoReportMessage(e);
+            ChatPatches.logReportMsg(e);
         }
 
-        return makeObject(chatNameFormat, profile.getName(), "", " ", style);
+        //TODO BUILD AND TEST W STYLEDCHAT FOR SPACE BUG
+        return makeObject(chatNameFormat, profile.getName(), "", /*FABRIC.isModLoaded("styledchat") ? "" :*/ " ", style);
     }
 
     public MutableText makeDupeCounter(int dupes) {
@@ -247,7 +248,7 @@ public class Config {
             return new ConfigOption<>( (T)config.getClass().getField(key).get(config), (T)config.getClass().getField(key).get(DEFAULTS), key );
         } catch(IllegalAccessException | NoSuchFieldException e) {
             LOGGER.error("[Config.getOption({})] An error occurred while trying to get an option value!", key);
-            ChatPatches.logInfoReportMessage(e);
+            ChatPatches.logReportMsg(e);
 
             return new ConfigOption<>( (T)new Object(), (T)new Object(), key );
         }
