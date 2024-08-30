@@ -174,31 +174,30 @@ public class ChatLog {
     }
 
     /**
-     * Saves the chat log to {@link #PATH}. Only saves if {@link Config#chatlog} is true,
-     * it isn't crashing again, and if there is *new* data to save. <i>As of 1.20.5,
-     * also requires the player to be in-game during the saving process (#180).</i>
-     *
-     * @param crashing If the game is crashing. If true, it will only save if {@link #savedAfterCrash}
-     * is false AND if {@link Config#chatlogSaveInterval} is 0.
+     * Saves the chat log to {@link #PATH}. Only saves if {@link Config#chatlog} is true
+     * and if there is *new* data to save. <i>As of 1.20.5, also requires the player to
+     * be in-game during the saving process, so the registry-synced TextCodec can be
+     * used (#180).</i>
      */
     public static void serialize(boolean crashing) {
-        if(!config.chatlog || (crashing && savedAfterCrash))
+        if(!config.chatlog)
             return;
         if(data.messages.isEmpty() && data.history.isEmpty())
             return; // don't overwrite the file with an empty one if there's nothing to save
         if(messageCount() == lastMessageCount && historyCount() == lastHistoryCount)
-            return; // don't save if there's no new data AND if the path is the default one (not a backup)
+            return; // don't save if there's no new data
         if(MinecraftClient.getInstance().world == null) {
-            LOGGER.error("[ChatLog.serialize] PLZ REPORT THIS: Tried to save the chat log while not in-game!");
+            ChatPatches.logReportMsg(new NullPointerException("Player must be in-game (ClientWorld must exist)")); //fixme npe msg
+            LOGGER.debug("[ChatLog.serialize] Dumped data:\n{\"history\":{},\"messages\":{}}", data.history, data.messages);
             return;
             //todo: all callers of this method must have the ClientWorld exist,
-            // notably the crashing mixin (repl MC mixin w ClientWorld mixin or sm?)
+            // notably the crashing mixin (repl MC mixin w ClientWorld mixin ?)
             // and the on-stop event (check if world exists, else use some other event. unless it's already saved by ClientWorld mixin)
         }
 
         try {
             JsonElement json = Data.CODEC.encodeStart(ChatPatches.jsonOps(), data)
-                .resultOrPartial(e -> ChatPatches.logInfoReportMessage(new JsonParseException(e)))
+                .resultOrPartial(e -> ChatPatches.logReportMsg(new JsonParseException(e)))
                 .orElseThrow();
 
             Files.writeString(PATH, JsonHelper.toSortedString(json), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -218,9 +217,6 @@ public class ChatLog {
         } catch(IOException | RuntimeException e) {
             LOGGER.error("[ChatLog.serialize] An I/O or unexpected runtime error occurred while trying to save the chat log:", e);
             LOGGER.debug("[ChatLog.serialize] Dumped data:\n{\"history\":{},\"messages\":{}}", data.history, data.messages);
-        } finally {
-            if(crashing)
-                savedAfterCrash = true;
         }
     }
 

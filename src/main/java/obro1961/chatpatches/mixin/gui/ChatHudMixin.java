@@ -226,10 +226,10 @@ public abstract class ChatHudMixin implements ChatHudAccessor {
         } catch(IndexOutOfBoundsException e) {
             ChatPatches.LOGGER.error("[ChatHudMixin.addCounter] Couldn't add duplicate counter because message '{}' ({} parts) was not constructed properly.", incoming.getString(), incoming.getSiblings().size());
             ChatPatches.LOGGER.error("[ChatHudMixin.addCounter] This could have also been caused by an issue with the new CompactChat dupe-condensing method. Either way,");
-            ChatPatches.logInfoReportMessage(e);
+            ChatPatches.logReportMsg(e);
         } catch(Exception e) {
             ChatPatches.LOGGER.error("[ChatHudMixin.addCounter] /!\\ Couldn't add duplicate counter because of an unexpected error! /!\\");
-            ChatPatches.logInfoReportMessage(e);
+            ChatPatches.logReportMsg(e);
         }
 
         return incoming;

@@ -17,8 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
 import java.util.*;
 
-import static obro1961.chatpatches.ChatPatches.config;
-import static obro1961.chatpatches.ChatPatches.msgData;
+import static obro1961.chatpatches.ChatPatches.*;
 import static obro1961.chatpatches.util.TextUtils.copyWithoutContent;
 import static obro1961.chatpatches.util.TextUtils.reorder;
 
@@ -221,8 +220,13 @@ public class ChatUtils {
 
 					MutableText realContent = Text.empty();
 					// find the first index of a '>' in the message, is formatted like '<%s> %s'
-					Text firstPart = parts.stream().filter(p -> p.getString().contains(">")).findFirst()
-						.orElseThrow(() -> new IllegalStateException("No closing angle bracket found in vanilla message '" + m.getString() + "' !"));
+					Text firstPart = parts.stream()
+						.filter(p -> p.getString().contains(">"))
+						.findFirst()
+						.orElseThrow(() -> ChatPatches.logAndThrowReportMsg(
+							new IllegalStateException("No closing angle bracket found in vanilla message '" + m.getString() + "'!")
+						));
+
 					String[] endBracketSplit = firstPart.getString().split(">"); // part of #156 AIOOBE i=1 fix
 					String afterEndBracket = endBracketSplit.length > 1 ? endBracketSplit[1] : ""; // just get the part after the closing bracket, we know the start
 
@@ -242,13 +246,18 @@ public class ChatUtils {
 				// don't reformat if it isn't vanilla or needed
 				content = m.copy();
 			}
-		} catch(Throwable e) {
-			ChatPatches.LOGGER.error("[ChatUtils.modifyMessage] An error occurred while modifying message '{}', returning original:", m.getString());
-			ChatPatches.LOGGER.debug("[ChatUtils.modifyMessage] \tOriginal message structure: {}", m);
-			ChatPatches.LOGGER.debug("[ChatUtils.modifyMessage] \tModified message structure:");
-			ChatPatches.LOGGER.debug("[ChatUtils.modifyMessage] \t\tTimestamp structure: {}", timestamp);
-			ChatPatches.LOGGER.debug("[ChatUtils.modifyMessage] \t\tContent structure: {}", content);
-			ChatPatches.logInfoReportMessage(e);
+		} catch(Exception e) {
+			LOGGER.error("[ChatUtils.modifyMessage] An error occurred while modifying message '{}', returning original:", m.getString());
+			LOGGER.debug("[ChatUtils.modifyMessage] \tOriginal message structure: {}", m);
+			LOGGER.debug("[ChatUtils.modifyMessage] \tModified message structure:");
+			LOGGER.debug("[ChatUtils.modifyMessage] \t\tTimestamp structure: {}", timestamp);
+			LOGGER.debug("[ChatUtils.modifyMessage] \t\tContent structure: {}", content);
+			ChatPatches.logReportMsg(e);
+
+			// todo: return m because we dont do that i think even tho the error msg says we will
+			//ChatLog.addMessage(m);
+			//msgData = ChatUtils.NIL_MSG_DATA;
+			//return m;
 		}
 
 		// assembles constructed message and adds a duplicate counter according to the #addCounter method

@@ -1,7 +1,7 @@
 # Changelog
 
-## Chat Patches `210.6.6` for Minecraft 1.21 on Fabric, Quilt
-- Fix odd enchantment registry crash (1.20.5-1.21, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180)) // WHY WONT THIS BUG DIEEEEEEEE
+## Chat Patches `210.6.6` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
+- Fix odd enchantment registry crash (1.20.5-1.21, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180)) // CLIENTWORLD MUST EXIST!!!
   - Now requires the user to be in-game to save or load the chat log
   - Clarified this new requirement in the action description
 - Removed stray debug logpoint in `ChatUtils#tryCondenseMessage`
@@ -14,6 +14,7 @@
 - Removed literal newline in `fabric.mod.json` ([#159](https://www.github.com/mrbuilder1961/ChatPatches/issues/159))
 - Added Korean translation thanks to [Nooiee](https://github.com/Nooiee)! ([#193](https://github.com/mrbuilder1961/ChatPatches/issues/193))
 - Added a very basic crash prevention mechanism for `ConcurrentModificationException`s while saving the chat log (if it works, [#181](https://www.github.com/mrbuilder1961/ChatPatches/issues/181))
+- Added support for 1.21.1!
 
 ## Chat Patches `210.6.5.1` for Minecraft 1.21 on Fabric, Quilt
 - Fix incompatibility with 1.20.5-6 (we were THIS close) ([#177](https://github.com/mrbuilder1961/ChatPatches/issues/177))

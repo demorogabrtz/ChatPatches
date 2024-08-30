@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -60,7 +59,7 @@ public class ChatPatches implements ClientModInitializer {
 		* 	MinecraftClientMixin#saveChatlogOnCrash - Always saves
 		*/
 
-		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> ChatLog.serialize(false)); //fixme: check if world exists; else use diff event
+		ClientPlayConnectionEvents.DISCONNECT.register((network, client) -> ChatLog.serialize(false)); //fixme: check if world exists; else use diff event
 		ScreenEvents.AFTER_INIT.register((client, screen, sW, sH) -> {
 			// saves the chat log if [the save interval is disabled] AND [the pause menu is showing OR the game isn't focused]
 			if( config.chatlogSaveInterval == 0 && (screen instanceof GameMenuScreen || !client.isWindowFocused()) )
@@ -126,22 +125,32 @@ public class ChatPatches implements ClientModInitializer {
 	/**
 	 * Logs an error-level message telling the user to report
 	 * the given error. The class and method of the caller is
-	 * provided from a {@link StackWalker}. Returns the passed
-	 * error for throwing if needed.
-	 * <br><br>
-	 * Outputs the following message:
+	 * provided from a {@link StackWalker}.
+	 *
+	 * <p>Outputs the following message:
 	 * <pre>
 	 * [$class.$method] /!\ Please report this error on GitHub or Discord with the full log file attached! /!\
 	 * (error)
 	 * </pre>
 	 */
-	public static Throwable logInfoReportMessage(@NotNull Throwable error) {
+	public static <X extends Throwable> void logReportMsg(@NotNull X error) {
 		StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 		String clazz = walker.getCallerClass().getSimpleName();
 		String method = walker.walk(frames -> frames.skip(1).findFirst().orElseThrow().getMethodName());
-		method = method.isBlank() ? error.getStackTrace()[0].getMethodName() : method;
+
+		if(method.isBlank())
+			method = error.getStackTrace()[0].getMethodName();
+
 		LOGGER.error("[%s.%s] /!\\ Please report this error on GitHub or Discord with the full log file attached! /!\\".formatted(clazz, method), error);
-		return error;
+	}
+
+	/**
+	 * Executes {@link #logReportMsg(Throwable)}
+	 * and throws the passed error.
+	 */
+	public static <X extends Throwable> X logAndThrowReportMsg(@NotNull X error) throws X {
+		logReportMsg(error);
+		throw error;
 	}
 
 	/**
