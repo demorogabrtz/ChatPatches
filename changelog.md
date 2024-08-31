@@ -1,7 +1,7 @@
 # Changelog
 
 ## Chat Patches `210.6.6` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
-- Fix odd enchantment registry crash (1.20.5+, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180)) // CLIENTWORLD MUST EXIST!!!
+- Fixed (FINALLY!!) the enchantment registry crash, thanks for the help [ArkoSammy12](https://github.com/ArkoSammy12)! (1.20.5+, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180))
   - Now requires the user to be in-game to save or load the chat log
   - Clarified this new requirement in the action description
 - Removed stray debug logpoint in `ChatUtils#tryCondenseMessage`
@@ -14,6 +14,7 @@
 - Simplified a part of the chat shifting process in `ChatHudMixin#moveChatLineY`, resolving an incompatibility with [ChatShot](https://modrinth.com/mod/chatshot) ([#187](https://www.github.com/mrbuilder1961/ChatPatches/issues/187))
 - Added an option to modify the height of the chat box for larger screens ([#190](https://github.com/mrbuilder1961/ChatPatches/pull/190))
 - Added support for 1.21.1!
+  - Note: There was technically TWO code privatizations in 1.21.1, but they just make the code slightly uglier so everything should be fine
 - Added Korean translation thanks to [Nooiee](https://github.com/Nooiee)! ([#193](https://github.com/mrbuilder1961/ChatPatches/issues/193))
 
 ## Chat Patches `210.6.5.1` for Minecraft 1.21 on Fabric, Quilt

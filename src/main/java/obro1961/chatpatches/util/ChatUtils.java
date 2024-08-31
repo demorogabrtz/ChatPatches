@@ -74,7 +74,7 @@ public class ChatUtils {
 		if(index < 0)
 			index = content.getArgs().length + index;
 
-		Object /* StringVisitable */ arg = content.getArg(index);
+		Object /* StringVisitable */ arg = content.getArgs()[index]; // since 1.21.1, #getArg is private. WHAT THE FUCK??
 
 		if(arg == null)
 			return Text.empty();
