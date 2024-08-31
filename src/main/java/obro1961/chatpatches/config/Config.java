@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static obro1961.chatpatches.ChatPatches.LOGGER;
 import static obro1961.chatpatches.ChatPatches.config;
@@ -35,6 +36,15 @@ import static obro1961.chatpatches.util.TextUtils.text;
 public class Config {
     public static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve("chatpatches.json");
     public static final Config DEFAULTS = new Config();
+    /**
+     * List of mods installed that, in one way or another,
+     * cause modified messages to have an extra space in
+     * between the timestamp and message content. While
+     * I could open issues to deal with this issue, it's
+     * much easier to just remove the space, especially
+     * if it's unintentionally my fault.
+     */
+    public static final Stream<String> EXTRA_SPACE_MODS = Stream.of("styledchat");
 
     private static final FabricLoader FABRIC = FabricLoader.getInstance();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -66,8 +76,8 @@ public class Config {
 
 
     public /*static*/ Screen getConfigScreen(Screen parent) {
-        // idea: make this return a new YACL screen here if bool in #create() is true
-        // instead of making a new config object
+        // idea: make this return a disconnect-type screen with text
+        //  suggesting to install yacl/cloth-config (depending on the vers)
         return null;
     }
 
@@ -151,7 +161,7 @@ public class Config {
         }
 
         //TODO BUILD AND TEST W STYLEDCHAT FOR SPACE BUG
-        return makeObject(chatNameFormat, profile.getName(), "", /*FABRIC.isModLoaded("styledchat") ? "" :*/ " ", style);
+        return makeObject(chatNameFormat, profile.getName(), "", /*EXTRA_SPACE_MODS.anyMatch(FABRIC::isModLoaded) ? "" :*/ " ", style);
     }
 
     public MutableText makeDupeCounter(int dupes) {

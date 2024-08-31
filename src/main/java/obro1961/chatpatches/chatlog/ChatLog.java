@@ -11,6 +11,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.JsonHelper;
@@ -186,17 +187,23 @@ public class ChatLog {
             return; // don't overwrite the file with an empty one if there's nothing to save
         if(messageCount() == lastMessageCount && historyCount() == lastHistoryCount)
             return; // don't save if there's no new data
-        if(MinecraftClient.getInstance().world == null) {
-            ChatPatches.logReportMsg(new NullPointerException("Player must be in-game (ClientWorld must exist)")); //fixme npe msg
-            LOGGER.debug("[ChatLog.serialize] Dumped data:\n{\"history\":{},\"messages\":{}}", data.history, data.messages);
+
+
+        //todo: all callers of this method must have the ClientWorld exist,
+        // notably the crashing mixin (repl MC mixin w ClientWorld mixin ?)
+
+        // catch the NPE and cancel IF it's thrown
+        RegistryOps<JsonElement> registeredOps;
+        try {
+            registeredOps = ChatPatches.jsonOps();
+        } catch(NullPointerException npe) {
+            ChatPatches.logReportMsg(npe);
+            dumpData();
             return;
-            //todo: all callers of this method must have the ClientWorld exist,
-            // notably the crashing mixin (repl MC mixin w ClientWorld mixin ?)
-            // and the on-stop event (check if world exists, else use some other event. unless it's already saved by ClientWorld mixin)
         }
 
         try {
-            JsonElement json = Data.CODEC.encodeStart(ChatPatches.jsonOps(), data)
+            JsonElement json = Data.CODEC.encodeStart(registeredOps, data)
                 .resultOrPartial(e -> ChatPatches.logReportMsg(new JsonParseException(e)))
                 .orElseThrow();
 
@@ -216,7 +223,7 @@ public class ChatLog {
             }
         } catch(IOException | RuntimeException e) {
             LOGGER.error("[ChatLog.serialize] An I/O or unexpected runtime error occurred while trying to save the chat log:", e);
-            LOGGER.debug("[ChatLog.serialize] Dumped data:\n{\"history\":{},\"messages\":{}}", data.history, data.messages);
+            dumpData();
         }
     }
 
@@ -251,7 +258,6 @@ public class ChatLog {
         LOGGER.info("[ChatLog.restore] Restored {} messages and {} history messages from '{}' into Minecraft!", messageCount(), historyCount(), PATH);
     }
 
-
     /**
      * Ticks {@link #ticksUntilSave} down by 1.
      *
@@ -272,6 +278,17 @@ public class ChatLog {
 
         if(ticksUntilSave < 0)
             ticksUntilSave = config.chatlogSaveInterval * 60 * 20;
+    }
+
+
+    /**
+     * Dumps chat log data into the debug log. Note:
+     * Assumes the Text codec is unusable, so instead
+     * maps each message using {@link Text#getString()}.
+     */
+    @SuppressWarnings("StringConcatenationArgumentToLogCall")
+    public static void dumpData() {
+        LOGGER.debug("[ChatLog.dumpData] " + Data.EMPTY_DATA.replaceAll("\\[]", "{}"), data.history, data.messages.stream().map(Text::getString).toList());
     }
 
     /**
@@ -299,6 +316,7 @@ public class ChatLog {
 
         return fixedData;
     }
+
 
     public static void addMessage(Text msg) {
         if(messageCount() > config.chatMaxMessages)

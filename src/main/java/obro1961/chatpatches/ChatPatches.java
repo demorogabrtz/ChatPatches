@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.screen.GameMenuScreen;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.RegistryWrapper;
@@ -53,12 +54,12 @@ public class ChatPatches implements ClientModInitializer {
 	public void onInitializeClient() {
 		/*
 		* ChatLog saving events, run if config.chatlog is true:
-		* 	CLIENT_STOPPING - Always saves
-		* 	SCREEN_AFTER_INIT - Saves if there is no save interval AND if the screen is the GameMenuScreen (paused)
-		* 	END_WORLD_TICK - Ticks the save counter, saves if the counter is 0, resets if <0
-		* 	MinecraftClientMixin#saveChatlogOnCrash - Always saves
+		* 	DISCONNECT - Always saves
+		* 	SCREEN_AFTER_INIT - Saves if the save interval is enabled AND if the screen is paused (GameMenuScreen)
+		* 	END_WORLD_TICK - Ticks the save counter
 		*/
 
+		// should THEORETICALLY still work a) when the game disconnects AND b) when the game crashes (see MinecraftClient#run >> printCrashReport)
 		ClientPlayConnectionEvents.DISCONNECT.register((network, client) -> ChatLog.serialize(false)); //fixme: check if world exists; else use diff event
 		ScreenEvents.AFTER_INIT.register((client, screen, sW, sH) -> {
 			// saves the chat log if [the save interval is disabled] AND [the pause menu is showing OR the game isn't focused]
@@ -160,13 +161,15 @@ public class ChatPatches implements ClientModInitializer {
 	 * <p>Fixes <a href="https://github.com/mrbuilder1961/ChatPatches/issues/180">#180</a>.
 	 * Thanks to
 	 * <a href="https://discord.com/channels/507304429255393322/721100785936760876/1278519812628156528">arkosammy12</a>
-	 * for some help on the Fabric Discord!
+	 * for help on the Fabric Discord!
 	 *
-	 * @since 1.21, but 1.20.5 introduces the necessity
+	 * @since 1.20.5 introduced the necessity
 	 * of wrapping with the {@link RegistryWrapper.WrapperLookup}
 	 */
-	public static RegistryOps<JsonElement> jsonOps() {
-		return Objects.requireNonNull(MinecraftClient.getInstance().world, "[ChatPatches#jsonOps] Expected existing world")
-			.getRegistryManager().getOps(JsonOps.INSTANCE);
+	public static RegistryOps<JsonElement> jsonOps() throws NullPointerException {
+		if(MinecraftClient.getInstance().world instanceof ClientWorld world)
+			return world.getRegistryManager().getOps(JsonOps.INSTANCE);
+		else
+			throw new NullPointerException("[ChatPatches#jsonOps] Expected existing ClientWorld");
 	}
 }
