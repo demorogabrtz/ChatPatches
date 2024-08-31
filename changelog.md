@@ -1,20 +1,20 @@
 # Changelog
 
 ## Chat Patches `210.6.6` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
-- Fix odd enchantment registry crash (1.20.5-1.21, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180)) // CLIENTWORLD MUST EXIST!!!
+- Fix odd enchantment registry crash (1.20.5+, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180)) // CLIENTWORLD MUST EXIST!!!
   - Now requires the user to be in-game to save or load the chat log
   - Clarified this new requirement in the action description
 - Removed stray debug logpoint in `ChatUtils#tryCondenseMessage`
 - Reintroduced the normal version scheme (not sure why I changed it in the first place...)
 - Fixed the 'Copy JSON String' copy menu button sometimes causing the game to crash, should now instead log an error and copy a warning
-- Simplified a part of the chat shifting process in `ChatHudMixin#moveChatLineY`, resolving an incompatibility with [ChatShot](https://modrinth.com/mod/chatshot) ([#187](https://www.github.com/mrbuilder1961/ChatPatches/issues/187))
 - Fixed boundary lines instantly-rendering when the chat is opened ([#151](https://www.github.com/mrbuilder1961/ChatPatches/issues/151))
-- Fixed the search bar rendering over the input suggestor instead of under it ([#186](https://www.github.com/mrbuilder1961/ChatPatches/issues/186))
-- Added an option to modify the height of the chat box for larger screens ([#190](https://github.com/mrbuilder1961/ChatPatches/pull/190))
 - Removed literal newline in `fabric.mod.json` ([#159](https://www.github.com/mrbuilder1961/ChatPatches/issues/159))
-- Added Korean translation thanks to [Nooiee](https://github.com/Nooiee)! ([#193](https://github.com/mrbuilder1961/ChatPatches/issues/193))
 - Added a very basic crash prevention mechanism for `ConcurrentModificationException`s while saving the chat log (if it works, [#181](https://www.github.com/mrbuilder1961/ChatPatches/issues/181))
+- Fixed the search bar rendering over the input suggestor instead of under it ([#186](https://www.github.com/mrbuilder1961/ChatPatches/issues/186))
+- Simplified a part of the chat shifting process in `ChatHudMixin#moveChatLineY`, resolving an incompatibility with [ChatShot](https://modrinth.com/mod/chatshot) ([#187](https://www.github.com/mrbuilder1961/ChatPatches/issues/187))
+- Added an option to modify the height of the chat box for larger screens ([#190](https://github.com/mrbuilder1961/ChatPatches/pull/190))
 - Added support for 1.21.1!
+- Added Korean translation thanks to [Nooiee](https://github.com/Nooiee)! ([#193](https://github.com/mrbuilder1961/ChatPatches/issues/193))
 
 ## Chat Patches `210.6.5.1` for Minecraft 1.21 on Fabric, Quilt
 - Fix incompatibility with 1.20.5-6 (we were THIS close) ([#177](https://github.com/mrbuilder1961/ChatPatches/issues/177))
