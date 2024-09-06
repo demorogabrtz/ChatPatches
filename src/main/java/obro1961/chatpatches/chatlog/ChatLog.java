@@ -222,7 +222,7 @@ public class ChatLog {
             LOGGER.info("[ChatLog.serialize] Saved the chat log containing {} messages and {} sent messages to '{}' in {} seconds",
                 messageCount(), historyCount(), PATH, (System.currentTimeMillis() - start) / 1000.0
             );
-        } catch(ConcurrentModificationException cme) {
+        } catch(ConcurrentModificationException cme) { // rudimentary attempt to fix thrown CMEs (#181)
             if(!Flags.ALLOW_CME.isRaised()) {
                 LOGGER.warn("[ChatLog.serialize] A ConcurrentModificationException was unexpectedly thrown, trying to serialize one more time:", cme);
                 Flags.ALLOW_CME.raise();
