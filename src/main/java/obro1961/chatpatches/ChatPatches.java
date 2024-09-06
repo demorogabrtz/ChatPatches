@@ -54,13 +54,16 @@ public class ChatPatches implements ClientModInitializer {
 	public void onInitializeClient() {
 		/*
 		* ChatLog saving events, run if config.chatlog is true:
-		* 	DISCONNECT - Always saves
+		* 	DISCONNECT - Always saves EXCEPT on (most?) server crashes
 		* 	SCREEN_AFTER_INIT - Saves if the save interval is enabled AND if the screen is paused (GameMenuScreen)
-		* 	END_WORLD_TICK - Ticks the save counter
+		* 	END_WORLD_TICK - Ticks the save counter and saves if it's enabled and the internal counter equals zero
 		*/
 
-		// should THEORETICALLY still work a) when the game disconnects AND b) when the game crashes (see MinecraftClient#run >> printCrashReport)
-		ClientPlayConnectionEvents.DISCONNECT.register((network, client) -> ChatLog.serialize(false)); //fixme: check if world exists; else use diff event
+
+		// according to my testing, this event works as needed when the game disconnects and on crashes if the game is functional at that point
+		// testing details (server=hypixel): normal disconnects work on both world and server, manual F3+C crash works on world but NOT server
+		// honestly I don't care if it fails on crashes, its fixable a) through the save interval or b) by fixing the crash's source
+		ClientPlayConnectionEvents.DISCONNECT.register((network, client) -> ChatLog.serialize(false));
 		ScreenEvents.AFTER_INIT.register((client, screen, sW, sH) -> {
 			// saves the chat log if [the save interval is disabled] AND [the pause menu is showing OR the game isn't focused]
 			if( config.chatlogSaveInterval == 0 && (screen instanceof GameMenuScreen || !client.isWindowFocused()) )

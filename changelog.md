@@ -17,6 +17,9 @@
   - Note: There was technically TWO code privatizations in 1.21.1, but they just make the code slightly uglier so everything should be fine
 - Added Korean translation thanks to [Nooiee](https://github.com/Nooiee)! ([#193](https://github.com/mrbuilder1961/ChatPatches/issues/193))
 - Made the chat log note how long it took to save to disk for debugging performance issues
+- Refactored chat log saving to remove `MinecraftClientMixin` and ever so slightly improve performance
+  - *Note: This does mean that on some crashes data may be lost. If this is of utmost importance to you, set the chat save interval option to a number 
+    greater than zero*
 
 ## Chat Patches `210.6.5.1` for Minecraft 1.21 on Fabric, Quilt
 - Fix incompatibility with 1.20.5-6 (we were THIS close) ([#177](https://github.com/mrbuilder1961/ChatPatches/issues/177))
