@@ -171,6 +171,7 @@ public class ChatUtils {
 		if( refreshing || Flags.LOADING_CHATLOG.isRaised() )
 			return m; // cancels modifications when loading the chatlog or regenerating visibles
 
+		boolean errorThrown = false;
 		boolean lastEmpty = msgData.equals(ChatUtils.NIL_MSG_DATA);
 		boolean boundary = Flags.BOUNDARY_LINE.isRaised() && config.boundary && !config.vanillaClearing;
 		Date now = lastEmpty ? new Date() : msgData.timestamp();
@@ -254,17 +255,25 @@ public class ChatUtils {
 			LOGGER.debug("[ChatUtils.modifyMessage] \t\tContent structure: {}", content);
 			ChatPatches.logReportMsg(e);
 
-			// todo: return m because we dont do that i think even tho the error msg says we will
-			//ChatLog.addMessage(m);
-			//msgData = ChatUtils.NIL_MSG_DATA;
-			//return m;
+			errorThrown = true;
 		}
 
-		// assembles constructed message and adds a duplicate counter according to the #addCounter method
-		Text modified = ChatUtils.buildMessage(style, timestamp, content, null);
-		ChatLog.addMessage(modified);
-		msgData = ChatUtils.NIL_MSG_DATA; // fixes messages that get around MessageHandlerMixin's data caching, usually thru ChatHud#addMessage (ex. open-to-lan message)
-		return modified;
+		try {
+			// assembles constructed message
+			Text modified = ChatUtils.buildMessage(style, timestamp, content, null);
+			ChatLog.addMessage(modified);
+
+			msgData = ChatUtils.NIL_MSG_DATA; // fixes messages that get around MessageHandlerMixin's data caching, usually thru ChatHud#addMessage (ex. open-to-lan message)
+			return modified;
+		} catch(RuntimeException e) {
+			if(errorThrown)
+				ChatLog.addMessage(m); // in this case we already knew about the error, so do what we haven't yet: log the original message!
+			else
+				ChatPatches.logReportMsg(e); // here we never had an error, so something went wrong: log the error!
+
+			msgData = ChatUtils.NIL_MSG_DATA;
+			return m; // return original bc we don't want to brick the chat due to pesky exceptions!
+		}
 	}
 
 	/**
