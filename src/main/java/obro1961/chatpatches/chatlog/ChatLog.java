@@ -104,6 +104,9 @@ public class ChatLog {
     public static void deserialize() {
         String rawData = Data.EMPTY_DATA;
 
+        long start = System.currentTimeMillis();
+        LOGGER.info("[ChatLog.deserialize] Reading...");
+
         if(Files.exists(PATH)) {
             try {
                 rawData = Files.readString(PATH);
@@ -132,14 +135,18 @@ public class ChatLog {
                 rawData = Data.EMPTY_DATA; // just in case of corruption from failures
             }
         } else {
-            data = new Data(true);
-            return;
+            // intentionally creates invalid data to prompt the next if block to
+            // generate a blank one and log it, instead of it happening twice
+            rawData = "";
         }
 
 
         // ignore invalid files
         if( rawData.length() < 2 || !rawData.startsWith("{") ) {
             data = new Data(true);
+            LOGGER.info("[ChatLog.deserialize] No chat log found at '{}', generated a blank one for {} initial messages in {} seconds",
+                PATH, Data.DEFAULT_SIZE, (System.currentTimeMillis() - start) / 1000.0
+            );
             return;
         }
 
@@ -168,9 +175,8 @@ public class ChatLog {
             return;
         }
 
-        LOGGER.info("[ChatLog.deserialize] Read the chat log containing {} messages and {} sent messages from '{}'",
-            messageCount(), historyCount(),
-            PATH
+        LOGGER.info("[ChatLog.deserialize] Read the chat log containing {} messages and {} sent messages from '{}' in {} seconds",
+            messageCount(), historyCount(), PATH, (System.currentTimeMillis() - start) / 1000.0
         );
     }
 
@@ -187,6 +193,9 @@ public class ChatLog {
             return; // don't overwrite the file with an empty one if there's nothing to save
         if(messageCount() == lastMessageCount && historyCount() == lastHistoryCount)
             return; // don't save if there's no new data
+
+        long start = System.currentTimeMillis();
+        LOGGER.info("[ChatLog.serialize] Saving...");
 
 
         //todo: all callers of this method must have the ClientWorld exist,
@@ -211,7 +220,9 @@ public class ChatLog {
 
             lastHistoryCount = historyCount();
             lastMessageCount = messageCount();
-            LOGGER.info("[ChatLog.serialize] Saved the chat log containing {} messages and {} sent messages to '{}'", messageCount(), historyCount(), PATH);
+            LOGGER.info("[ChatLog.serialize] Saved the chat log containing {} messages and {} sent messages to '{}' in {} seconds",
+                messageCount(), historyCount(), PATH, (System.currentTimeMillis() - start) / 1000.0
+            );
         } catch(ConcurrentModificationException cme) {
             if(!Flags.ALLOW_CME.isRaised()) {
                 LOGGER.warn("[ChatLog.serialize] A ConcurrentModificationException was unexpectedly thrown, trying to serialize one more time:", cme);
