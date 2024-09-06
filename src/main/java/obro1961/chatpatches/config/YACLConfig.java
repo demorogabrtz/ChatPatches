@@ -210,7 +210,7 @@ public class YACLConfig extends Config {
                 ChatLog.deserialize();
                 ChatLog.restore(MinecraftClient.getInstance());
             } else if(key.equals("chatlogSave")) {
-                ChatLog.serialize(false);
+                ChatLog.serialize();
             } else if(key.equals("chatlogBackup")) {
                 ChatLog.backup();
             } else if(key.equals("chatlogOpenFolder")) {

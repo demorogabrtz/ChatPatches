@@ -48,7 +48,6 @@ public class ChatLog {
     public static int ticksUntilSave = config.chatlogSaveInterval * 60 * 20; // convert minutes to ticks
 
     private static ChatLog.Data data = new Data();
-    private static boolean savedAfterCrash = false;
     private static int lastHistoryCount = -1, lastMessageCount = -1;
 
 
@@ -186,7 +185,7 @@ public class ChatLog {
      * be in-game during the saving process, so the registry-synced TextCodec can be
      * used (#180).</i>
      */
-    public static void serialize(boolean crashing) {
+    public static void serialize() {
         if(!config.chatlog)
             return;
         if(data.messages.isEmpty() && data.history.isEmpty())
@@ -227,7 +226,7 @@ public class ChatLog {
             if(!Flags.ALLOW_CME.isRaised()) {
                 LOGGER.warn("[ChatLog.serialize] A ConcurrentModificationException was unexpectedly thrown, trying to serialize one more time:", cme);
                 Flags.ALLOW_CME.raise();
-                serialize(false);
+                serialize();
                 Flags.ALLOW_CME.lower();
             } else {
                 LOGGER.error("[ChatLog.serialize] A ConcurrentModificationException was thrown again, chat log saving FAILED:", cme);
@@ -283,7 +282,7 @@ public class ChatLog {
      */
     public static void tickSaveCounter() {
         if(config.chatlogSaveInterval > 0 && ticksUntilSave == 0)
-            serialize(false);
+            serialize();
 
         ticksUntilSave--;
 

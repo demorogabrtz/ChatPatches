@@ -63,11 +63,11 @@ public class ChatPatches implements ClientModInitializer {
 		// according to my testing, this event works as needed when the game disconnects and on crashes if the game is functional at that point
 		// testing details (server=hypixel): normal disconnects work on both world and server, manual F3+C crash works on world but NOT server
 		// honestly I don't care if it fails on crashes, its fixable a) through the save interval or b) by fixing the crash's source
-		ClientPlayConnectionEvents.DISCONNECT.register((network, client) -> ChatLog.serialize(false));
+		ClientPlayConnectionEvents.DISCONNECT.register((network, client) -> ChatLog.serialize());
 		ScreenEvents.AFTER_INIT.register((client, screen, sW, sH) -> {
 			// saves the chat log if [the save interval is disabled] AND [the pause menu is showing OR the game isn't focused]
 			if( config.chatlogSaveInterval == 0 && (screen instanceof GameMenuScreen || !client.isWindowFocused()) )
-				ChatLog.serialize(false);
+				ChatLog.serialize();
 		});
 		ClientTickEvents.END_WORLD_TICK.register(world -> ChatLog.tickSaveCounter());
 
