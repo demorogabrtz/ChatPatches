@@ -199,7 +199,7 @@ public class ChatUtils {
 							teamPart.append(Text.literal("-> ").setStyle(style));
 
 						// adds the team name for team messages
-						teamPart.append(getArg(ttc, 0).append(" "));
+						teamPart.append(getArg(ttc, 0).copy().append(" "));
 
 						content.append(teamPart);
 					} else {
