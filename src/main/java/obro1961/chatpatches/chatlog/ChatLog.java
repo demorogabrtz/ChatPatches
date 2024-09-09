@@ -197,9 +197,6 @@ public class ChatLog {
         LOGGER.info("[ChatLog.serialize] Saving...");
 
 
-        //todo: all callers of this method must have the ClientWorld exist,
-        // notably the crashing mixin (repl MC mixin w ClientWorld mixin ?)
-
         // catch the NPE and cancel IF it's thrown
         RegistryOps<JsonElement> registeredOps;
         try {
