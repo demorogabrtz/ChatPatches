@@ -1,6 +1,6 @@
 # Changelog
 
-## Chat Patches `211.6.6` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
+## Chat Patches `211.6.7` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
 - Fixed (FINALLY!!) the enchantment registry crash, thanks for the help [ArkoSammy12](https://github.com/ArkoSammy12)! (1.20.5+, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180))
   - Now requires the user to be in-game to save or load the chat log
   - Clarified this new requirement in the action description
