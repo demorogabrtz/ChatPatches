@@ -9,6 +9,7 @@
 - Fixed the 'Copy JSON String' copy menu button sometimes causing the game to crash, should now instead log an error and copy a warning
 - Fixed boundary lines instantly-rendering when the chat is opened ([#151](https://www.github.com/mrbuilder1961/ChatPatches/issues/151))
 - Removed literal newline in `fabric.mod.json` ([#159](https://www.github.com/mrbuilder1961/ChatPatches/issues/159))
+- Fixed the `shiftChat` option not shifting hover events ([#172](https://www.github.com/mrbuilder1961/ChatPatches/issues/172))
 - Added a very basic crash prevention mechanism for `ConcurrentModificationException`s while saving the chat log (if it works, [#181](https://www.github.com/mrbuilder1961/ChatPatches/issues/181))
 - Fixed the search bar rendering over the input suggestor instead of under it ([#186](https://www.github.com/mrbuilder1961/ChatPatches/issues/186))
 - Simplified a part of the chat shifting process in `ChatHudMixin#moveChatLineY`, resolving an incompatibility with [ChatShot](https://modrinth.com/mod/chatshot) ([#187](https://www.github.com/mrbuilder1961/ChatPatches/issues/187))
