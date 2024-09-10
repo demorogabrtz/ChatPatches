@@ -1,6 +1,7 @@
 # Changelog
 
 ## Chat Patches `211.6.7` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
+- Gradle 8.10
 - Fixed the chat log enchantment registry crash, thanks [ArkoSammy12](https://github.com/ArkoSammy12)! (1.20.5+, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180))
   - Now requires the user to be in-game to save or load
   - Clarified this new requirement in the description
