@@ -19,8 +19,8 @@ base {
 }
 
 // global publishing variables - shouldPublish defaults to true, but can be set to false by using `-PshouldPublish=false`
-boolean shouldPublish = Boolean.parseBoolean( providers.gradleProperty("shouldPublish").getOrElse("true") )
-String changelogText = "Changelog could not be found... 😬"
+def shouldPublish = Boolean.parseBoolean( providers.gradleProperty("shouldPublish").getOrElse("true") )
+def changelogText = "Changelog could not be found... 😬"
 
 repositories {
   	mavenCentral()
@@ -50,14 +50,14 @@ processResources {
 		} */
 	}
 
-	File changelog = file("changelog.md")
+	def changelog = file("changelog.md")
 	if( changelog.exists() ) {
 		// replaces github issue numbers with links
 		file("changelog.md").text = changelog.text.replaceAll("##(\\d+)", "[#\$1](https://www.github.com/mrbuilder1961/ChatPatches/issues/\$1)")
 
 		// hackily gets the first changelog entry
-		String newEntryTitle = "## Chat Patches `" + version + "`"
-		int prevEntryIndex = file("changelog.md").text.replaceFirst(newEntryTitle, "").indexOf("## Chat Patches `") + newEntryTitle.length() - 2
+		def newEntryTitle = "## Chat Patches `" + version + "`"
+		def prevEntryIndex = file("changelog.md").text.replaceFirst(newEntryTitle, "").indexOf("## Chat Patches `") + newEntryTitle.length() - 2
 
 		changelogText = file("changelog.md").text.substring(0, prevEntryIndex).replaceFirst("# Changelog\\s+", "")
 
