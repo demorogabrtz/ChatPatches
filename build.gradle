@@ -1,5 +1,4 @@
 import groovy.json.JsonSlurper
-import me.modmuss50.mpp.ReleaseType
 
 import java.util.function.BiFunction
 import java.util.function.Function
@@ -8,7 +7,7 @@ import java.util.stream.Stream
 plugins {
 	id "fabric-loom" version "1.7-SNAPSHOT"
 	id "maven-publish"
-	id "me.modmuss50.mod-publish-plugin" version "0.7.3"
+	id "me.modmuss50.mod-publish-plugin" version "0.7.4"
 }
 
 group = project.group
@@ -119,10 +118,10 @@ publishMods {
 	Function<String, List<String>> propListGetter = (String propertyName) ->
 			rootProject[propertyName] != null ? Stream.of( rootProject[propertyName].toString().split(",") ).filter{!it.isBlank()}.toList() : new ArrayList<>()
 	BiFunction<String, Boolean, String> tokenGetter = (String tokenName, boolean valid) ->
-			valid && secrets.exists() ? Objects.requireNonNullElse(new JsonSlurper().parse (secrets)[tokenName], "-") : "-"
+			valid && secrets.exists() ? Objects.requireNonNullElse(new JsonSlurper().parse(secrets)[tokenName], "-") : "-"
 
 	// gradle.properties vars
-	ReleaseType phase = ReleaseType.valueOf( rootProject.phase.toString().toUpperCase() )
+	String phase = rootProject.phase.toString().toLowerCase()
 	List<String> loaders = propListGetter.apply("loaders") // Arrays.asList( rootProject.loaders.toString().split(",") )
 	List<String> targets = propListGetter.apply("targets") // Arrays.asList( rootProject.targets.toString().split(",") )
 	String[] required = propListGetter.apply("required").toArray()
@@ -141,7 +140,7 @@ publishMods {
 	displayName = v.toString()
 	file = remapJar.archiveFile // Forge would use jar (NeoForge? i think so..)
 	changelog = changelogText
-	type = phase
+	type = (phase.matches("release|stable") ? STABLE : phase.matches("beta") ? BETA : ALPHA)
 	modLoaders = loaders
 	dryRun = !shouldPublish
 
@@ -159,6 +158,7 @@ publishMods {
 		projectSlug = archives_base_name
 
 		minecraftVersions.addAll(targets)
+		clientRequired = true
 
 		requires(required)
 		optional(optionals)
