@@ -8,7 +8,7 @@ import java.util.stream.Stream
 plugins {
 	id "fabric-loom" version "1.7-SNAPSHOT"
 	id "maven-publish"
-	id "me.modmuss50.mod-publish-plugin" version "0.5.1"
+	id "me.modmuss50.mod-publish-plugin" version "0.7.3"
 }
 
 group = project.group
@@ -70,11 +70,17 @@ processResources {
 			}
 			println()
 		}
+	}
 
+	if(changelogText.length() > 2000) {
+		def more = "..\n***.. and more! Check out the full release notes on GitHub!***"
+		changelogText = changelogText.substring(0, 2000 - more.length()).stripTrailing() + more
+
+		println "Trimmed changelog, was over 2000 characters"
 	}
 
 	if(!shouldPublish)
-		println "Using changelog text:\n>${changelogText}<"
+		println "Using changelog text:\n>$changelogText<"
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -114,6 +120,7 @@ publishMods {
 			rootProject[propertyName] != null ? Stream.of( rootProject[propertyName].toString().split(",") ).filter{!it.isBlank()}.toList() : new ArrayList<>()
 	BiFunction<String, Boolean, String> tokenGetter = (String tokenName, boolean valid) ->
 			valid && secrets.exists() ? Objects.requireNonNullElse(new JsonSlurper().parse (secrets)[tokenName], "-") : "-"
+
 	// gradle.properties vars
 	ReleaseType phase = ReleaseType.valueOf( rootProject.phase.toString().toUpperCase() )
 	List<String> loaders = propListGetter.apply("loaders") // Arrays.asList( rootProject.loaders.toString().split(",") )

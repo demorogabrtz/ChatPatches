@@ -1,29 +1,26 @@
 # Changelog
 
 ## Chat Patches `211.6.7` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
-- Fixed (FINALLY!!) the enchantment registry crash, thanks for the help [ArkoSammy12](https://github.com/ArkoSammy12)! (1.20.5+, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180))
-  - Now requires the user to be in-game to save or load the chat log
-  - Clarified this new requirement in the action description
-- Removed stray debug logpoint in `ChatUtils#tryCondenseMessage`
-- Reintroduced the normal version scheme (not sure why I changed it in the first place...)
+- Fixed the chat log enchantment registry crash, thanks [ArkoSammy12](https://github.com/ArkoSammy12)! (1.20.5+, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180))
+  - Now requires the user to be in-game to save or load
+  - Clarified this new requirement in the description
+  - Now logs how long loading and saving takes
+- Removed `MinecraftClientMixin`, which may result in losing data on some crashes when `chatlogSaveInterval` is set to zero
+- Removed debug logpoint in `ChatUtils#tryCondenseMessage`
 - Fixed the 'Copy JSON String' copy menu button sometimes causing the game to crash, should now instead log an error and copy a warning
-- Fixed boundary lines instantly-rendering when the chat is opened ([#151](https://www.github.com/mrbuilder1961/ChatPatches/issues/151))
+- Fixed boundary lines instantly rendering when the chat is opened ([#151](https://www.github.com/mrbuilder1961/ChatPatches/issues/151))
 - Removed literal newline in `fabric.mod.json` ([#159](https://www.github.com/mrbuilder1961/ChatPatches/issues/159))
 - Fixed the `shiftChat` option not shifting hover events ([#172](https://www.github.com/mrbuilder1961/ChatPatches/issues/172))
-- Added a very basic crash prevention mechanism for `ConcurrentModificationException`s while saving the chat log (if it works, [#181](https://www.github.com/mrbuilder1961/ChatPatches/issues/181))
-- Fixed the search bar rendering over the input suggestor instead of under it ([#186](https://www.github.com/mrbuilder1961/ChatPatches/issues/186))
-- Simplified a part of the chat shifting process in `ChatHudMixin#moveChatLineY`, resolving an incompatibility with [ChatShot](https://modrinth.com/mod/chatshot) ([#187](https://www.github.com/mrbuilder1961/ChatPatches/issues/187))
+- Added a basic crash prevention mechanism for `ConcurrentModificationException`s while saving the chat log (if it works, [#181](https://www.github.com/mrbuilder1961/ChatPatches/issues/181))
+- Fixed the search bar rendering over the input suggestor ([#186](https://www.github.com/mrbuilder1961/ChatPatches/issues/186))
+- Simplified part of the chat shifting process in `ChatHudMixin#moveChatLineY`, resolving an incompatibility with [ChatShot](https://modrinth.com/mod/chatshot) ([#187](https://www.github.com/mrbuilder1961/ChatPatches/issues/187))
 - Added an option to modify the height of the chat box for larger screens ([#190](https://github.com/mrbuilder1961/ChatPatches/pull/190))
 - Added support for 1.21.1!
-  - Note: There was technically TWO code privatizations in 1.21.1, but they just make the code slightly uglier so everything should be fine
+  - *Note: There was technically TWO code privatizations in 1.21.1, but they had simple fixes*
 - Added Korean translation from [Nooiee](https://github.com/Nooiee)! ([#193](https://github.com/mrbuilder1961/ChatPatches/issues/193))
-- Made the chat log note how long it took to save to disk for debugging performance issues
-- Fixed team messages showing up blank and throwing an error (##199)
-- Refactored chat log saving to remove `MinecraftClientMixin` and ever so slightly improve performance
-  - *Note: This does mean that on some crashes data may be lost. If this is of utmost importance to you, set the chat save interval option to a number 
-    greater than zero*
-- Modified messages should now be used in the chat even if errors occurred, so long as it is still valid. This might be undone in a future update based on 
-  feedback and future testing
+- Fixed team messages showing up blank and throwing an error ([#199](https://www.github.com/mrbuilder1961/ChatPatches/issues/199))
+- Modified messages should now be used even if errors occurred, so long as they're still valid. This might be undone in the future based on 
+  feedback
 
 ## Chat Patches `210.6.5.1` for Minecraft 1.21 on Fabric, Quilt
 - Fix incompatibility with 1.20.5-6 (we were THIS close) ([#177](https://github.com/mrbuilder1961/ChatPatches/issues/177))
