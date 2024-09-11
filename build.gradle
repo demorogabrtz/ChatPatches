@@ -128,7 +128,7 @@ publishMods {
 	String[] optionals = propListGetter.apply("optionals").toArray()
 	String[] incompatibles = propListGetter.apply("incompatibles").toArray()
 	String[] embedded = propListGetter.apply("embedded").toArray()
-	String branch = targets.get(targets.size() - 1) // last target is the branch
+	String branch = rootProject.branch.toString()
 	// tokens - token name and if it should return the token or "-"
 	String cfToken = tokenGetter.apply("curseforge", shouldPublish)
 	String mrToken = tokenGetter.apply("modrinth", shouldPublish)
