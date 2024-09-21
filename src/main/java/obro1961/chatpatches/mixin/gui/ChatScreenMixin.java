@@ -402,7 +402,6 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 	@Inject(method = {"mouseClicked", "keyPressed"}, at = @At("RETURN"))
 	private void closeMenuOnInput(CallbackInfoReturnable<Boolean> cir) {
 		// hide copy menu if any other element was clicked first
-		// specifically,
 		if(cir.getReturnValue() && showCopyMenu)
 			showCopyMenu = false;
 	}
