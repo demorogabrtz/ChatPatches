@@ -1,5 +1,14 @@
 # Changelog
 
+## Chat Patches `211.6.9` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
+- Fixed blank messages being sent instead of Xaero's Minimap waypoints ([#158](https://www.github.com/mrbuilder1961/ChatPatches/issues/158))
+  - Should also fix any issues in the special case where a message is modified in between receiving and storing it
+- Synced `zh_cn.json` with the current English translation, thanks [suoyukii](https://github.com/suoyukii)! ([#203](https://www.github.com/mrbuilder1961/ChatPatches/issues/203)))
+
+## Chat Patches `211.6.8` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
+- Fixed the chat log taking insane amounts of time to read ([#191](https://www.github.com/mrbuilder1961/ChatPatches/issues/191))
+- Fixed the copy menu staying open when other chat widgets were focused/interacted with ([#165](https://www.github.com/mrbuilder1961/ChatPatches/issues/165))
+
 ## Chat Patches `211.6.7` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
 - Gradle 8.10
 - Fixed the chat log enchantment registry crash, thanks [ArkoSammy12](https://github.com/ArkoSammy12)! (1.20.5+, [#180](https://www.github.com/mrbuilder1961/ChatPatches/issues/180))

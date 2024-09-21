@@ -29,6 +29,8 @@ public class ChatUtils {
 	public static final MessageData NIL_MSG_DATA = new MessageData(new GameProfile(ChatUtils.NIL_UUID, ""), Date.from(Instant.EPOCH), false);
 	public static final int TIMESTAMP_INDEX = 0, MESSAGE_INDEX = 1, DUPE_INDEX = 2; // indices of all main (modified message) components
 	public static final int MSG_TEAM_INDEX = 0, MSG_SENDER_INDEX = 1, MSG_CONTENT_INDEX = 2; // indices of all MESSAGE_INDEX components
+	/** Matches only an entire vanilla player message. */
+	public static final String VANILLA_FORMAT = "(?i)^<[a-z0-9_]{3,16}>\\s.+$";
 
 	/**
 	 * Returns the message component at the given index;
@@ -55,7 +57,7 @@ public class ChatUtils {
 	}
 
 	/**
-	 * Returns a MutableText object representing the argument
+	 * Returns a MutableText object of the argument
 	 * located at the given index of the given
 	 * {@link TranslatableTextContent}. Needed because of a weird
 	 * phenomenon where the {@link TranslatableTextContent#getArg(int)}
@@ -66,7 +68,7 @@ public class ChatUtils {
 	 * and nulls in {@link Text#empty()}.
 	 *
 	 * @implNote
-	 * If {@code index} is negative, adds it to the args array
+	 * If {@code index} is negative, it's added to the args array
 	 * length. In other words, passing index {@code -n} will
 	 * get the {@code content.getArgs().length-n}th argument.
 	 */
@@ -119,7 +121,7 @@ public class ChatUtils {
 	/**
 	 * Reformats the incoming message {@code m} according to configured
 	 * settings, message data, and at indices specified in this class.
-	 * This method is used in the {@link ChatHudMixin#modifyMessage(Text, boolean)}
+	 * This method is used in the {@link ChatHudMixin#modifyMessage(Text)}
 	 * mixin for functionality.
 	 *
 	 * @implNote
@@ -185,8 +187,10 @@ public class ChatUtils {
 			timestamp = (config.time && !boundary) ? config.makeTimestamp(now).setStyle( config.makeHoverStyle(now) ) : Text.empty().styled(s -> s.withInsertion(nowStr));
 			content = Text.empty().setStyle(style);
 
-			// reconstruct the player message if it's in the vanilla format and it should be reformatted
-			if(!lastEmpty && !boundary && msgData.vanilla()) {
+			// reconstruct the player message if it's in the vanilla format and should be reformatted
+			// the msgData vanilla means the original message was vanilla-formatted, and the regex check means it still is.
+			// see Xaero's Minimap waypoint sharing for more information (#158)
+			if(!lastEmpty && !boundary && msgData.vanilla() && m.getString().matches(VANILLA_FORMAT)) {
 				// if the message is translatable, then we know exactly where everything is
 				if(m.getContent() instanceof TranslatableTextContent ttc && ttc.getKey().matches("chat.type.(text|team.(text|sent))")) {
 					String key = ttc.getKey();
@@ -199,7 +203,7 @@ public class ChatUtils {
 							teamPart.append(Text.literal("-> ").setStyle(style));
 
 						// adds the team name for team messages
-						teamPart.append(getArg(ttc, 0).copy().append(" "));
+						teamPart.append(getArg(ttc, MSG_TEAM_INDEX).copy().append(" ")); // copy() fixes (#199)
 
 						content.append(teamPart);
 					} else {
@@ -208,8 +212,8 @@ public class ChatUtils {
 
 					// adds the formatted playername and content for all message types
 					content.append(config.formatPlayername(msgData.sender())); // sender data is already known
-					content.append(getArg(ttc, -1)); // always at the end
-				} else { // reconstructs the message if it matches the vanilla format '<%s> %s' but isn't translatable
+					content.append(getArg(ttc, -1)); // always at the end, sometimes but not necessarily always at MSG_CONTENT_INDEX
+				} else { // reconstructs the message if it matches the vanilla format but isn't translatable
 					// collect all message parts into one list, including the root TextContent
 					// (assuming this accounts for all parts, TextContents, and siblings)
 					List<Text> parts = Util.make(new ArrayList<>(m.getSiblings().size() + 1), a -> {
