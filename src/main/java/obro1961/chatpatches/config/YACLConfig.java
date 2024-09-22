@@ -160,7 +160,7 @@ public class YACLConfig extends Config {
                                         I18n.translate("text.chatpatches." + opt.key),
 
                                         ( opt.getType().equals(Integer.class) && opt.key.contains("Color") )
-                                            ? "`0x%06x`".formatted(opt.def)
+                                            ? "`0x%06x`".formatted( (int)opt.def )
                                             : (opt.getType().equals(String.class))
                                                 ? "`\"" + opt.def + "\"`"
                                                 : "`" + opt.def + "`",
@@ -170,7 +170,7 @@ public class YACLConfig extends Config {
                                     ))
                                 );
 
-                                ChatPatches.LOGGER.warn("[YACLConfig.printGithubTables]" + str);
+								ChatPatches.LOGGER.warn("[YACLConfig.printGithubTables] {}", str);
                             })
                             .build()
                     )
@@ -316,8 +316,6 @@ public class YACLConfig extends Config {
         try {
             if( MinecraftClient.getInstance().getResourceManager().getResource(id).isPresent() )
                 builder.webpImage(id);
-            else
-                ChatPatches.LOGGER.debug("[YACLConfig.desc] No .{} image found for '{}'", ext, opt.key.replaceAll("([A-Z])", "_$1").toLowerCase());
         } catch(Throwable e) {
             ChatPatches.LOGGER.error("[YACLConfig.desc] An error occurred while trying to use '{}:{}' :", ChatPatches.MOD_ID, image, e);
         }
