@@ -44,7 +44,7 @@ public class Config {
      * much easier to just remove the space, especially
      * if it's unintentionally my fault.
      */
-    public static final Stream<String> EXTRA_SPACE_MODS = Stream.of("styledchat");
+    //public static final Stream<String> EXTRA_SPACE_MODS = Stream.of("styledchat");
 
     private static final FabricLoader FABRIC = FabricLoader.getInstance();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -160,7 +160,6 @@ public class Config {
             ChatPatches.logReportMsg(e);
         }
 
-        //TODO BUILD AND TEST W STYLEDCHAT FOR SPACE BUG
         return makeObject(chatNameFormat, profile.getName(), "", /*EXTRA_SPACE_MODS.anyMatch(FABRIC::isModLoaded) ? "" :*/ " ", style);
     }
 
