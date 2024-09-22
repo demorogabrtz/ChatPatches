@@ -115,7 +115,9 @@
     "text.chatpatches.help.regex": "For regular expression information, click me!",
     "text.chatpatches.help.regexTester": "For testing regular expressions, click me!",
     "text.chatpatches.help.reloadConfig": "Reload Config",
+    "text.chatpatches.help.missing": "§cCannot open config screen",
     "text.chatpatches.desc.help.reloadConfig": "Press to read the config file and load any changes. §c§lThis will override any unsaved changes made here!§r§f You need to exit and re-open this screen to see the changes take effect.",
+    "text.chatpatches.desc.help.missing": "§7Please install %s §7to access the config in-game!",
 
 
     "text.chatpatches.search.suggestion": "Search...",

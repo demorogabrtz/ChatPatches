@@ -607,7 +607,7 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 		String hMF = TextUtils.reorder( hoveredVisibles.get(0).content(), false );
 		String hoveredMessageFirst = hMF.isEmpty() ? "\n" : hMF; // fixes messages starting with newlines not being detected
 
-		/* warning: longer messages sometimes fail because extra spaces appear to be added,
+		/* note: longer messages sometimes fail because extra spaces appear to be added,
 		   so i switched it to a startsWith() bc the first one never has extra spaces. /!\ can probably still fail /!\ */
 		// get hovered message index (messages) for all copying data
 		selectedLine =

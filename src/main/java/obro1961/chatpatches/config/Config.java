@@ -6,10 +6,14 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConfirmLinkScreen;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.*;
 import obro1961.chatpatches.ChatPatches;
 import obro1961.chatpatches.util.ChatUtils;
@@ -25,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import static obro1961.chatpatches.ChatPatches.LOGGER;
 import static obro1961.chatpatches.ChatPatches.config;
@@ -75,10 +78,18 @@ public class Config {
     }
 
 
-    public /*static*/ Screen getConfigScreen(Screen parent) {
-        // idea: make this return a disconnect-type screen with text
-        //  suggesting to install yacl/cloth-config (depending on the vers)
-        return null;
+    public Screen getConfigScreen(Screen parent) {
+        MinecraftClient mc = MinecraftClient.getInstance();
+        boolean suggestYACL = SharedConstants.getProtocolVersion() >= 759; // 1.19 or higher
+        String link = "https://modrinth.com/mod/" + (suggestYACL ? "yacl" : "cloth-config");
+
+        return new ConfirmScreen(
+            clicked -> {if(clicked) ConfirmLinkScreen.open(parent, link); else mc.setScreen(parent);},
+            Text.translatable("text.chatpatches.help.missing"),
+            Text.translatable("text.chatpatches.desc.help.missing", (suggestYACL ? "YACL" : "Cloth Config")),
+            ScreenTexts.CONTINUE,
+            ScreenTexts.BACK
+        );
     }
 
 

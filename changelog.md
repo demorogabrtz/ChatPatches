@@ -4,6 +4,9 @@
 - Fixed blank messages being sent instead of Xaero's Minimap waypoints ([#158](https://www.github.com/mrbuilder1961/ChatPatches/issues/158))
   - Should also fix any issues in the special case where a message is modified in between receiving and storing it
 - Synced `zh_cn.json` with the current English translation, thanks [suoyukii](https://github.com/suoyukii)! ([#203](https://www.github.com/mrbuilder1961/ChatPatches/issues/203))
+- **Dev notes:**
+  - The config will now always appear open-able regardless of installed mods, but will instead prompt the user to install YACL (1.19 or newer) or Cloth Config
+    if it's not already installed. However, this is currently useless as YACL is required in newer versions, and is more for backwards compatibility
 
 ## Chat Patches `211.6.8` for Minecraft 1.21, 1.21.1 on Fabric, Quilt
 - Fixed the chat log taking insane amounts of time to read ([#191](https://www.github.com/mrbuilder1961/ChatPatches/issues/191))
