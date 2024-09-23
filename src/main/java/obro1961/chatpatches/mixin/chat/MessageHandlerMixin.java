@@ -45,7 +45,7 @@ public abstract class MessageHandlerMixin {
     private void cacheChatData(SignedMessage message, GameProfile sender, MessageType.Parameters params, CallbackInfo ci) {
         // only logs the metadata if it was a player-sent message (otherwise tries to format some commands like /msg and /me)
         ChatPatches.msgData = params.type().value().chat().translationKey().equals("chat.type.text")
-            ? new ChatUtils.MessageData(sender, Date.from(message.getTimestamp()), isVanilla(params.applyChatDecoration(message.getContent()), "CHAT"))
+            ? new ChatUtils.MessageData(sender, Date.from(message.getTimestamp()), isVanilla(params.applyChatDecoration(message.getContent())))
             : ChatUtils.NIL_MSG_DATA;
     }
 
@@ -59,7 +59,7 @@ public abstract class MessageHandlerMixin {
         UUID id = extractSender(message);
 
         ChatPatches.msgData = !id.equals(Util.NIL_UUID)
-            ? new ChatUtils.MessageData(new GameProfile(id, name), new Date(), isVanilla(message, "GAME"))
+            ? new ChatUtils.MessageData(new GameProfile(id, name), new Date(), isVanilla(message))
             : ChatUtils.NIL_MSG_DATA;
     }
 
@@ -78,8 +78,7 @@ public abstract class MessageHandlerMixin {
      * to properly include the playername.
      */
     @Unique
-    private boolean isVanilla(Text message, String... type) {
-        ChatPatches.LOGGER.warn("checking {} message \"{}\" = {}", type, message.getString(), message.getString().matches(ChatUtils.VANILLA_FORMAT));
+    private boolean isVanilla(Text message) {
         return message.getString().matches(ChatUtils.VANILLA_FORMAT);
     }
 }
