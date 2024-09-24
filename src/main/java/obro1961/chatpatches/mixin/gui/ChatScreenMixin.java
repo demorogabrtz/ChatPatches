@@ -100,16 +100,15 @@ public abstract class ChatScreenMixin extends Screen implements ChatScreenAccess
 	// search stuff
 	@Unique private static boolean showSearch = true;
 	@Unique private static boolean showSettingsMenu = false; // note: doesn't really need to be static
+	@Unique private static String searchDraft = "";
 	// copy menu stuff
 	@Unique private static boolean showCopyMenu = false; // true when a message was right-clicked on
 	@Unique private static ChatHudLine selectedLine = NIL_HUD_LINE;
 	@Unique private static Map<Text, MenuButtonWidget> mainButtons = new LinkedHashMap<>(); // buttons that appear on the initial click
 	@Unique private static Map<Text, MenuButtonWidget> hoverButtons = new LinkedHashMap<>(); // buttons that are revealed on hover
 	@Unique private static List<ChatHudLine.Visible> hoveredVisibles = new ArrayList<>();
-	// drafting (todo: can we remove these and instead use `originalChatText`?)
-	@Unique private static String searchDraft = "";
-	@Unique private static String messageDraft = "";
-
+	@Unique private static String messageDraft = ""; // needed instead of originalChatText to be accessible in all ChatScreen instances
+	// more search stuff
 	@Unique private TextFieldWidget searchField;
 	@Unique private SearchButtonWidget searchButton;
 	@Unique private PatternSyntaxException searchError;
