@@ -18,6 +18,11 @@ permissions:
 
 jobs:
   dependency-submission:
+    strategy:
+      matrix:
+        java: [
+          21 # Latest Java LTS & minimum supported by Minecraft
+        ]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout sources
@@ -26,6 +31,6 @@ jobs:
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: 17
+        java-version: ${{ matrix.java }}
     - name: Generate and submit dependency graph
       uses: gradle/actions/dependency-submission@v4
